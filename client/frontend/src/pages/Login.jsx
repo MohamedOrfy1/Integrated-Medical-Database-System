@@ -21,8 +21,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Add your login logic here
-    setTimeout(() => setIsLoading(false), 1500); // Simulated API call
+    setTimeout(() => setIsLoading(false), 1500);
   };
 
   return (
