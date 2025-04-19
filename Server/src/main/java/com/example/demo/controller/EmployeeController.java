@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.model.Employee;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController {

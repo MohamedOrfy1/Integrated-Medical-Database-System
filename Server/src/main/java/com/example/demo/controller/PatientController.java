@@ -10,7 +10,7 @@ import com.example.demo.model.Patient;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
 @RequestMapping("/patients")
 public class PatientController {

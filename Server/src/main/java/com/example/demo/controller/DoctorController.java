@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.example.demo.model.Doctor;
 import org.springframework.http.ResponseEntity;
 import org.slf4j.LoggerFactory;
-
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
 public class DoctorController {
