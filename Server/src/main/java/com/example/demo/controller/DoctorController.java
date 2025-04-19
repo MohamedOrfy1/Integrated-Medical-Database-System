@@ -35,7 +35,7 @@ public class DoctorController {
 
         String sql = "SELECT COUNT(*) FROM Doctor WHERE username = ? AND password = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
-        return count != null && count > 0;
+        return count > 0;
 
     }
 
