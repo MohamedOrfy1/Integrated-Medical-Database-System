@@ -1,20 +1,25 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Doctor;
 import com.example.demo.service.DoctorService;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
+import com.example.demo.model.Doctor;
 import org.springframework.http.ResponseEntity;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
-@RequestMapping("/api/doctors")
+@RequestMapping("/doctors")
 public class DoctorController {
 
     private final DoctorService doctorService;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private static final Logger logger = LoggerFactory.getLogger(DoctorController.class);
 
 
@@ -23,9 +28,15 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
-    @PostMapping
-    public Doctor createDoctor(@RequestBody Doctor doctor) {
-        return doctorService.createDoctor(doctor);
+    @PostMapping("/login")
+    public boolean login(@RequestBody Doctor doc) {
+        String username = doc.getUsername();
+        String password = doc.getPassword();
+
+        String sql = "SELECT COUNT(*) FROM Doctor WHERE username = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
+        return count != null && count > 0;
+
     }
 
     @GetMapping("/getall")

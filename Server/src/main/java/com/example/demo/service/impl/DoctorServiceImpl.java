@@ -1,10 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.Doctor;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import  com.example.demo.model.*;
+import com.example.demo.service.DoctorService;
 
 import java.util.List;
 
@@ -37,5 +38,10 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public void deleteDoctor(Long id) {
         doctorRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean checkDoc(String user,String pass){
+        return false;
     }
 }
