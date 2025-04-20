@@ -5,7 +5,8 @@ import com.example.demo.model.Patient;
 import java.util.List;
 
 public interface PatientService {
-    Patient createPatient(Patient patient);
+    Boolean InsertJsonPatient(String JsonPatient);
     String getPatientsInJson();
+    Boolean isPatientExist(String id);
 
 }

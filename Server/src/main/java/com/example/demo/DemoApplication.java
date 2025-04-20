@@ -13,6 +13,7 @@ public class DemoApplication {
         System.setProperty("POSTGRES_PORT", dotenv.get("POSTGRES_PORT"));
         System.setProperty("POSTGRES_USER", dotenv.get("POSTGRES_USER"));
         System.setProperty("POSTGRES_PASSWORD", dotenv.get("POSTGRES_PASSWORD"));
+        System.setProperty("PEPPER", dotenv.get("PEPPER"));
 
 
 

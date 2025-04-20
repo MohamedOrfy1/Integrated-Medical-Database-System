@@ -4,6 +4,7 @@ import com.example.demo.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -59,4 +60,12 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Find patients with pagination support
     @Query("SELECT p FROM Patient p ORDER BY p.registrationDate DESC")
     List<Patient> findAllWithPagination(org.springframework.data.domain.Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query("INSERT INTO Patient(patientId, firstName, fatherName, grandfatherName, familyName, phoneNumber, registrationDate, email, name) " +
+            "VALUES(:#{#patient.patientId}, :#{#patient.firstName}, :#{#patient.fatherName}, " +
+            ":#{#patient.grandfatherName}, :#{#patient.familyName}, :#{#patient.phoneNumber}, " +
+            ":#{#patient.registrationDate}, :#{#patient.email}, :#{#patient.name})")
+    int insertPatient(@Param("patient") Patient patient);
 }

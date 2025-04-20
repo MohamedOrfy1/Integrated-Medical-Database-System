@@ -35,39 +35,10 @@ public class PatientController {
 
     @PostMapping("/add")
     @Transactional
-    public ResponseEntity<Boolean> createPatient(@RequestBody Patient patient) {
-        try {
+    public ResponseEntity<Boolean> addPatient(@RequestBody String JsonPatient) {
+        if (patientService.InsertJsonPatient(JsonPatient)) return ResponseEntity.ok(true);
+        else return ResponseEntity.ok(false);
 
-
-            // Raw SQL query with parameters
-            String sql = """
-                INSERT INTO patient (
-                    patient_id, first_name, father_name, grandfather_name,
-                    family_name, phone_number, registration_date, email, name
-                ) VALUES (
-                    :patientId, :firstName, :fatherName, :grandfatherName,
-                    :familyName, :phoneNumber, :registrationDate, :email, :name
-                )
-                """;
-
-            // Execute query and get affected rows
-            int rowsAffected = entityManager.createNativeQuery(sql)
-                    .setParameter("patientId", patient.getPatientId())
-                    .setParameter("firstName", patient.getFirstName())
-                    .setParameter("fatherName", patient.getFatherName())
-                    .setParameter("grandfatherName", patient.getGrandfatherName())
-                    .setParameter("familyName", patient.getFamilyName())
-                    .setParameter("phoneNumber", patient.getPhoneNumber())
-                    .setParameter("registrationDate", patient.getRegistrationDate())
-                    .setParameter("email", patient.getEmail())
-                    .setParameter("name", patient.getName())
-                    .executeUpdate();
-
-            // Return true if inserted successfully
-            return ResponseEntity.ok(rowsAffected > 0);
-        } catch (Exception e) {
-            return ResponseEntity.ok(false);
-        }
     }
 
 
