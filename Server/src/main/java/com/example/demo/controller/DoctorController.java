@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.service.CommonService;
 import com.example.demo.service.DoctorService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final CommonService commonService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -21,8 +23,10 @@ public class DoctorController {
 
 
     @Autowired
-    public DoctorController(DoctorService doctorService) {
+    public DoctorController(DoctorService doctorService, CommonService commonService) {
         this.doctorService = doctorService;
+        this.commonService = commonService;
+
     }
 
     @PostMapping("/login")

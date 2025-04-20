@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.service.CommonService;
+import com.example.demo.service.DoctorService;
 import com.example.demo.service.PatientService;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
@@ -15,9 +17,19 @@ import java.util.List;
 @RequestMapping("/patients")
 public class PatientController {
 
-    //private final PatientService patientService;
+    private final PatientService patientService;
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    public PatientController(PatientService patientservice) {
+        this.patientService = patientservice;
+    }
+
+    @GetMapping("/getPatients")
+    public String getAllPatients() {
+        return patientService.getPatientsInJson();
+    }
 
 
 
@@ -58,10 +70,7 @@ public class PatientController {
         }
     }
 
-    @GetMapping
-    public List<Patient> getAllPatients() {
-        return null;
-    }
+
 
     @GetMapping("/{id}")
     public Patient getPatientById(@PathVariable Long id) {
