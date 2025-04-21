@@ -8,5 +8,6 @@ public interface PatientService {
     Boolean InsertJsonPatient(String JsonPatient);
     String getPatientsInJson();
     Boolean isPatientExist(String id);
+    Boolean isPatientValid(Patient patient);
 
 }

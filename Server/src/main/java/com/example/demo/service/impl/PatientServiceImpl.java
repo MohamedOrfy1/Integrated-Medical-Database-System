@@ -60,6 +60,11 @@ public class PatientServiceImpl implements PatientService {
         else return true;
     }
 
+    @Override
+    public Boolean isPatientValid(Patient patient){
+        return null;
+    }
+
 
 
 }
