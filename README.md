@@ -21,23 +21,24 @@ mvn build
 **Compiles the Java source code of your project**
 ---
 ### Project Structure
-demo/
-├── .gitignore
-├── pom.xml
-├── src/
-│ ├── main/
-│ │ ├── java/
-│ │ │ └── com.example.demo/
-│ │ │ ├── controller/
-│ │ │ ├── filter/
-│ │ │ ├── model/
-│ │ │ ├── repository/
-│ │ │ ├── service/
-│ │ │ └── DemoApplication.java
-│ │ └── resources/
-│ │ ├── env/
-│ │ └── application.properties
-└── target/ (generated during build)
+
+demo/  
+├── .gitignore  
+├── pom.xml  
+├── src/  
+│ ├── main/  
+│ │ ├── java/  
+│ │ │ └── com.example.demo/  
+│ │ │ ├── controller/  
+│ │ │ ├── filter/  
+│ │ │ ├── model/  
+│ │ │ ├── repository/  
+│ │ │ ├── service/  
+│ │ │ └── DemoApplication.java  
+│ │ └── resources/  
+│ │ ├── env/  
+│ │ └── application.properties  
+└── target/ (generated during build)  
 
 
 ## Key Files Explanation:
