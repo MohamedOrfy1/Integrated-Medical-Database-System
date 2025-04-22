@@ -1,0 +1,21 @@
+p{
+    font-size: 25px;
+    font-weight: 900;
+}
+.about-container{
+    margin-left: 15px;
+}
+.about{
+    display: flex;
+}
+.about-img img{
+    width: 350px ;
+    height: 350px;
+}
+.about-img{
+
+}
+.about-text{
+   padding-top: 70px;
+   text-align: right;
+}

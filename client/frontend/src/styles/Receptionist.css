@@ -1,0 +1,236 @@
+body {
+    background-color:  #D4F0FA;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+.receptionist-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Tab Styles */
+.tabs {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-right: 16px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: #2196f3;
+}
+
+.tab-button.active {
+    color: #2196f3;
+    border-bottom: 2px solid #2196f3;
+}
+
+/* Form Styles */
+.patient-form {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group input:focus {
+    border-color: #2196f3;
+    outline: none;
+}
+
+button[type="submit"] {
+    background-color: #2196f3;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    background-color: #1976d2;
+}
+
+button[type="submit"]:disabled {
+    background-color: #bdbdbd;
+    cursor: not-allowed;
+}
+
+/* Table Styles */
+.patients-list {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tab-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    .patient-form, .patients-list {
+        padding: 16px;
+    }
+    
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+.patient-info {
+    background: #f9f9f9;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.diagnosis-info{
+    /* display: flex; */
+    flex: 1;
+    flex-direction: column;
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* justify-content: space-between; */
+    /* margin-bottom: 20px; */
+    /* margin-top: 20px; */
+    background: #f9f9f9;
+    padding: 20px;
+    /* margin: 20px 0; */
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 500px;
+}
+
+h2 {
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.info-row label {
+    width: 120px;
+    /* margin-right: 5px; */
+    font-weight: bold;
+}
+
+.info-row input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 50px;
+    font-size: 18px;
+}
+
+.register {
+    padding: 0px 20px;
+    background-color: white;
+    color: #34495e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    font-family: inherit; 
+    font-weight: normal;
+    margin-top: 10px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
+    margin-left: auto;
+    display: block;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    text-align: center;
+}
+
+.register:hover {
+    background-color: #67b6d3;
+}
+
+.diagnosis-container {
+    display: flex;
+    gap: 20px;
+    flex-direction: row; 
+    align-items: flex-start;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.buttons{
+    display: flex;
+    /* justify-content: center; */
+    /* align-items: center; */
+    gap: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 42px; /* Align with diagnosis title */
+}
+  
