@@ -1,0 +1,16 @@
+.home-container{
+    margin-left: 10px;
+}
+.home{
+    display: flex;
+    justify-content: space-between;
+}
+.home-text h1{
+    margin: 10px;
+}
+.home-img img{
+height: 100vh;
+}
+.home-img{
+    justify-items: end;
+}
