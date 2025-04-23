@@ -23,13 +23,13 @@ import java.util.List;
 @RequestMapping("/employees")
 public class EmployeeController {
 
+    private  final String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/" ;
     private String html =  "";
 
 
 
 
     private final EmployeeService employeeService;
-    private static final String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/" ;
     private final PDFGenService pdfGenService;
 
     @Autowired
@@ -54,29 +54,17 @@ public class EmployeeController {
         return null;
     }
 
-
-    //still needs extra work and modification
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException { //it downloads the file
         try {
-            System.out.println(pdfGenService.convertXhtmlToPdf(html));
-        }catch(Exception e){
-            System.out.println("ERRORRR");
-        }
-        // Load file as Resource
-        Path filePath = Paths.get(FILE_DIRECTORY).resolve(fileName).normalize();
-        Resource resource = new UrlResource(filePath.toUri());
 
-        // Check if file exists
-        if (!resource.exists()) {
-            throw new RuntimeException("File not found: " + fileName);
-        }
+            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders()));
+        }catch(Exception e){}
 
-        // Determine content type
-        String contentType = "application/pdf";
+        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve(fileName).normalize().toUri());
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
+                .contentType(MediaType.parseMediaType("application/pdf"))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
