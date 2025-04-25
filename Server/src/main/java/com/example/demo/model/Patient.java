@@ -1,9 +1,6 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -31,20 +28,24 @@ public class Patient {
     @Column(name = "family_name", length = 20)
     private String familyName;
 
-    @Column(name = "phone_number", nullable = false, length = 11)
+    @Column(name = "phone_number",unique = true, nullable = false, length = 11)
     private String phoneNumber;
 
     @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;
+    @Transient
+    private Integer age;
+    @Transient
+    private String sex;
 
-    @ColumnDefault("nextval('patient_id_seq')")
-    @Column(name = "id", nullable = false)
-    private Long id;
+//    @ColumnDefault("nextval('patient_id_seq')")
+//    @Column(name = "id", nullable = false)
+//    private Long id;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "name")
-    private String name;
+//    @Column(name = "email")
+//    private String email;
+//
+//    @Column(name = "name")
+//    private String name;
 
 }

@@ -9,6 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -34,11 +37,9 @@ public class PatientServiceImpl implements PatientService {
         }catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid patient JSON: " + e.getOriginalMessage());
         }
-        if (!isPatientExist(p.getPatientId()))
+        if (!isPatientExist(p.getPatientId())&&isPatientValid(p))
         { affected_rows = patientRepository.insertPatient(p);
         }
-
-
         return affected_rows > 0;
     }
 
@@ -62,9 +63,75 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Boolean isPatientValid(Patient patient){
-        return null;
+        if(patient.getFirstName().trim().equals("")||patient.getFatherName().trim().equals("")||patient.getGrandfatherName().trim().equals(""))
+        {
+            return false;
+        }
+        return isValidNationalId(patient.getPatientId())&&isValidPhoneNumber(patient.getPhoneNumber());
     }
 
+    @Override
+    public Boolean isValidBirthDate(String yymmdd, int centuryDigit) {
+        try {
+            int year = Integer.parseInt(yymmdd.substring(0, 2));
+            int month = Integer.parseInt(yymmdd.substring(2, 4));
+            int day = Integer.parseInt(yymmdd.substring(4, 6));
+            int fullYear = switch (centuryDigit) {
+                case 2 -> 1900 + year;
+                case 3 -> 2000 + year;
+                case 4 -> 2100 + year;
+                default -> throw new IllegalArgumentException("Invalid century digit");
+            };
+            LocalDate birthDate = LocalDate.of(fullYear, month, day);
+            LocalDate today = LocalDate.now();
+            return !birthDate.isAfter(today);
+        } catch (DateTimeException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+@Override
+    public Boolean isValidNationalId(String nationalId) {
+    try{
+        int centuryDigit = Character.getNumericValue(nationalId.charAt(0));
+        String yymmdd = nationalId.substring(1, 7);
+        int governorateCode = Integer.parseInt(nationalId.substring(7, 9));
+        if (nationalId.length() != 14||nationalId.trim().equals("")) {
+            return false;
+        }
+        for (char c : nationalId.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        if (centuryDigit < 2 || centuryDigit > 3) {
+            return false;
+        }
+        if (governorateCode < 1 || governorateCode > 35) {
+            return false;
+        }
+        for (char c : nationalId.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return isValidBirthDate(yymmdd,centuryDigit);
+    }
+    catch(StringIndexOutOfBoundsException s)
+    {return false;}
+    }
+   @Override
+    public Boolean isValidPhoneNumber(String phoneNumber){
+        if (phoneNumber.length() != 11) {
+            return false;
+        }
+        if (!(phoneNumber.startsWith("010") ||
+                phoneNumber.startsWith("011") ||
+                phoneNumber.startsWith("012") ||
+                phoneNumber.startsWith("015"))) {
+            return false;
+        }
+        return phoneNumber.chars().allMatch(Character::isDigit);
+    }
 
 
 }
