@@ -33,9 +33,9 @@ public class Doctor {
     @Column(name = "password", nullable = false, length = 78)
     private String password;
 
-    @ColumnDefault("nextval('doctor_id_seq')")
-    @Column(name = "id", nullable = false)
-    private Long id;
+//    @ColumnDefault("nextval('doctor_id_seq')")
+//    @Column(name = "id", nullable = false)
+//    private Long id;
 
     @Column(name = "email")
     private String email;

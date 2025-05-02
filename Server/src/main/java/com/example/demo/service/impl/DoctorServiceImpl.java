@@ -30,13 +30,13 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Doctor getDoctorById(Long id) {
+    public Doctor getDoctorById(String id) {
         return doctorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
-    public void deleteDoctor(Long id) {
+    public void deleteDoctor(String id) {
         doctorRepository.deleteById(id);
     }
 

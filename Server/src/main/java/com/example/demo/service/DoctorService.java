@@ -6,7 +6,7 @@ import com.example.demo.model.Doctor;
 public interface DoctorService {
     Doctor createDoctor(Doctor doctor);
     List<Doctor> getAllDoctors();
-    Doctor getDoctorById(Long id);
-    void deleteDoctor(Long id);
+    Doctor getDoctorById(String id);
+    void deleteDoctor(String id);
     boolean checkDoc(String user,String pass);
 }

@@ -30,9 +30,6 @@ public class PatientController {
     public String getAllPatients() {
         return patientService.getPatientsInJson();
     }
-
-
-
     @PostMapping("/add")
     @Transactional
     public ResponseEntity<Boolean> addPatient(@RequestBody String JsonPatient) {

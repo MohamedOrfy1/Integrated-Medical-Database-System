@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.example.demo.model.Doctor;
 import org.springframework.http.ResponseEntity;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
@@ -41,17 +44,21 @@ public class DoctorController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<String> getAllDoctors() {
-        return ResponseEntity.ok("Check");
+//    public ResponseEntity<String> getAllDoctors() {
+//        return ResponseEntity.ok(doctorService.getAllDoctors());
+//    }
+    public ResponseEntity<List<Doctor>> getAllDoctors() {
+        List<Doctor> doctors = doctorService.getAllDoctors();
+        return ResponseEntity.ok(doctors);
     }
 
     @GetMapping("/{id}")
-    public Doctor getDoctorById(@PathVariable Long id) {
+    public Doctor getDoctorById(@PathVariable String id) {
         return doctorService.getDoctorById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
+    public void deleteDoctor(@PathVariable String id) {
         doctorService.deleteDoctor(id);
     }
 }

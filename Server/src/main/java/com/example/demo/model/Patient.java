@@ -42,10 +42,10 @@ public class Patient {
 //    @Column(name = "id", nullable = false)
 //    private Long id;
 
-//    @Column(name = "email")
-//    private String email;
-//
-//    @Column(name = "name")
-//    private String name;
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "name")
+    private String name;
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DoctorRepository extends JpaRepository<Doctor, Long> {
+public interface DoctorRepository extends JpaRepository<Doctor, String> {
 
     // Find by doctor_id (your custom ID)
     Optional<Doctor> findByDoctorId(String doctorId);

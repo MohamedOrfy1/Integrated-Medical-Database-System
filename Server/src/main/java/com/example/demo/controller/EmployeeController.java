@@ -58,7 +58,7 @@ public class EmployeeController {
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException { //it downloads the file
         try {
 
-            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders()));
+            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders());
         }catch(Exception e){}
 
         Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve(fileName).normalize().toUri());

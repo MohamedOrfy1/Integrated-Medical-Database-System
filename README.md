@@ -66,6 +66,7 @@ demo/
 The `target` directory is automatically generated when you run `mvn package`.
 
 ---
+
 ### Complete endpoints
 #### Base URL
 `http://localhost:8080`
@@ -74,6 +75,8 @@ The `target` directory is automatically generated when you run `mvn package`.
 | GET    | `/patients/getPatients`         | get all patients registered in the database                | empty body                  | Json object of other Json objects of type patients|
 | POST   | `/patients/add`                 | insert a patient into the database                         | Json object of type Patient | true or false depends if insertion is done or not |
 | GET   | `employees/download/output.pdf`  | generate and download randomized CBC test result report    | empty body                  | PDF File                                          |
+| POST  | `/admissions/add`               | Create admission for a patient                             | json object of type AdmissionRequestDTO  | true or Bad request       |
+|GET    |'/doctor/patients/{doctorId}/filter' | Filter patients by admission date range and/or age range| empty body,parameters are sent(doctorId: String, startDate: Date (optional), endDate: Date (optional), minAge: Integer (optional), maxAge: Integer (optional))                                    |List of PatientResponseDTO objects   |
 
  ---
 
