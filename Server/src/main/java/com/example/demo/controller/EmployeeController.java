@@ -2,9 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.service.EmployeeService;
 import com.example.demo.service.PDFGenService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.Resource;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,7 +23,7 @@ import java.nio.file.Paths;
 import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     private  final String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/" ;
@@ -39,26 +42,44 @@ public class EmployeeController {
         this.pdfGenService = pdfGenService;
     }
 
-    @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
-    }
 
     @GetMapping
     public List<Employee> getAllEmployees() {
         return null;
     }
 
-    @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Long id) {
-        return null;
+    @PostMapping("/assign")
+    @Transactional
+    public ResponseEntity<Boolean> assignDocToPatient(@RequestBody String assignJson) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(assignJson);
+            String patientId = rootNode.path("PatientId").asText();
+            String doctorId = rootNode.path("DoctorId").asText();
+
+            boolean isCorrect = employeeService.assignDocToPatient(doctorId,patientId);
+            if (isCorrect){
+                return ResponseEntity.ok(true);
+            }else{
+                return ResponseEntity.ok(false);
+            }
+
+        }catch(Exception e){
+            System.out.println(e);
+            return ResponseEntity.ok(false);
+        }
+
     }
+
+
+
+
 
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException { //it downloads the file
         try {
 
-            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders()));
+            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders());
         }catch(Exception e){}
 
         Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve(fileName).normalize().toUri());

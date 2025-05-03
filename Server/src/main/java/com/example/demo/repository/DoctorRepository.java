@@ -14,6 +14,7 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
+
     // Find by doctor_id (your custom ID)
     Optional<Doctor> findByDoctorId(String doctorId);
 

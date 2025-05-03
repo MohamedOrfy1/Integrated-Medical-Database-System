@@ -26,7 +26,7 @@ public class Doctor {
     @Column(name = "doc_type", nullable = false, length = 15)
     private String docType;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "dept_id", nullable = false)
     private Department dept;
 

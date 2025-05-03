@@ -8,7 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DemoApplication {
     public static void main(String[] args) {
 
-        Dotenv dotenv = Dotenv.configure().load();
+        Dotenv dotenv = Dotenv.configure().directory("./src/main/resources").load();
+
         System.setProperty("POSTGRES_PORT", dotenv.get("POSTGRES_PORT"));
         System.setProperty("POSTGRES_USER", dotenv.get("POSTGRES_USER"));
         System.setProperty("POSTGRES_PASSWORD", dotenv.get("POSTGRES_PASSWORD"));

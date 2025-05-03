@@ -29,6 +29,10 @@ public class DoctorController {
 
     }
 
+    @GetMapping("/getdoc")
+    public String getDoctors() { return doctorService.getDoctorsInJson(); }
+
+
     @PostMapping("/login")
     public boolean login(@RequestBody Doctor doc) {
         String username = doc.getUsername();
