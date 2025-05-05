@@ -9,5 +9,7 @@ public interface DoctorService {
     Doctor getDoctorById(Long id);
     void deleteDoctor(Long id);
     boolean checkDoc(String user,String pass);
+    String getAllDiagnosisJson();
     String getDoctorsInJson();
+    String getPatientsDiagnosedby(String DiagnosisId);
 }
