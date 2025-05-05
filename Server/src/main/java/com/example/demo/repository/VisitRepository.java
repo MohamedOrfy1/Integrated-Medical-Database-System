@@ -20,6 +20,13 @@ public interface VisitRepository extends JpaRepository<Visit, VisitId> {
 
     // Basic CRUD operations are inherited from JpaRepository
 
+    @Query("SELECT p FROM Patient p JOIN Visit v ON p.patientId = v.id.patientId " +
+            "WHERE v.id.registrationDate = :date")
+    List<Patient> findPatientsByVisitDate(@Param("date") LocalDate date);
+
+    @Query("SELECT DISTINCT v.id.patientId FROM Visit v WHERE v.id.registrationDate = :date")
+    List<String> findPatientIdsByRegistrationDate(@Param("date") LocalDate date);
+
     // Find by composite ID
     Optional<Visit> findById_PatientIdAndId_RegistrationDate(String patientId, LocalDate registrationDate);
 

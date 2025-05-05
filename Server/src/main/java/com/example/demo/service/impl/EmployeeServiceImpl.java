@@ -2,11 +2,15 @@ package com.example.demo.service.impl;
 
 import com.example.demo.repository.*;
 import com.example.demo.service.EmployeeService;
-import com.example.demo.model.*;
+import com.example.demo.model.Visit;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import  com.example.demo.model.*;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -73,5 +77,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             }
             return false;
+        }
+        @Override
+        public String getPatientsByRegisterDateJson(LocalDate date){
+        List <Patient> Pats = visitRepository.findPatientsByVisitDate(date);
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
+                return objectMapper.writeValueAsString(Pats);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
         }
         }

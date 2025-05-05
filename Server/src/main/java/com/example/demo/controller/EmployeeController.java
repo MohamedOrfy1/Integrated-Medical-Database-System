@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.UrlResource;
+import java.time.LocalDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,22 @@ public class EmployeeController {
 
         this.employeeService = employeeService;
         this.pdfGenService = pdfGenService;
+    }
+
+    @PostMapping("/getPatDate")
+    public ResponseEntity<String> getPatientsByDate(@RequestBody String registerDate) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try{
+            JsonNode rootNode = objectMapper.readTree(registerDate);
+            String date = rootNode.path("Date").asText();
+            return ResponseEntity.ok(employeeService.getPatientsByRegisterDateJson(LocalDate.parse(date))); //yyyy-MM-dd
+        }catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+
+
+
     }
 
 
