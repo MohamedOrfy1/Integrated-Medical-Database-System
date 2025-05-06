@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.service.CommonService;
 import com.example.demo.service.DoctorService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
@@ -9,6 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.example.demo.model.Doctor;
 import org.springframework.http.ResponseEntity;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
@@ -29,6 +34,10 @@ public class DoctorController {
 
     }
 
+    @GetMapping("/getdoc")
+    public String getDoctors() { return doctorService.getDoctorsInJson(); }
+
+
     @PostMapping("/login")
     public boolean login(@RequestBody Doctor doc) {
         String username = doc.getUsername();
@@ -40,9 +49,23 @@ public class DoctorController {
 
     }
 
-    @GetMapping("/getall")
-    public ResponseEntity<String> getAllDoctors() {
-        return ResponseEntity.ok("Check");
+    @GetMapping("/getDiagnosis")
+    public ResponseEntity<String> getAllDiagnosis() {
+        String dig = doctorService.getAllDiagnosisJson();
+        return ResponseEntity.ok(dig);
+    }
+
+    @PostMapping("/getPatDiagnosis")
+    public ResponseEntity<String> getPatientsByDiagnosis(@RequestBody String DiagnosisId) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(DiagnosisId);
+            String diagnosisId = rootNode.path("DiagnosisId").asText();
+            return ResponseEntity.ok(doctorService.getPatientsDiagnosedby(diagnosisId));
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
     }
 
     @GetMapping("/{id}")

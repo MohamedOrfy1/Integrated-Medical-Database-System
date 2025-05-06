@@ -38,6 +38,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Find patients registered after a specific date
     List<Patient> findByRegistrationDateAfter(LocalDate date);
 
+    boolean existsByPatientId(String patientId);
+
     // Check if patient exists by phone number
     boolean existsByPhoneNumber(String phoneNumber);
 

@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>CBC Report</title>
+    <style type="text/css">
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+            line-height: 1.2;
+        }
+
+        .a4-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 0;
+            background: #fff;
+            box-sizing: border-box;
+            overflow: hidden;
+            page-break-inside: avoid;
+            -fs-page-sequence: start;
+        }
+
+        .header {
+            margin-bottom: 10px;
+            border-bottom: 2px solid #0066cc;
+            padding: 10px 0;
+            display: block;
+            overflow: hidden;
+        }
+
+        .header-column {
+            width: 100%;
+        }
+
+        .header-image {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .patient-info {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f8f8;
+        }
+
+        .patient-info-left,
+        .patient-info-right {
+            display: table-cell;
+            width: 48%;
+            line-height: 1;
+            vertical-align: top;
+        }
+
+        .patient-info p {
+            margin: 4px 0;
+        }
+
+        .report-title {
+            text-align: center;
+            margin: 15px 0;
+            color: #0066cc;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .test-results {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .test-results th {
+            background-color: #0066cc;
+            color: white;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .test-results td {
+            padding: 6px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .reference-range {
+            font-style: italic;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #0066cc;
+            display: table;
+            width: 100%;
+        }
+
+        .signature-area {
+            display: table-cell;
+            width: 180px;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .notes {
+            margin: 15px 0;
+            font-size: 11px;
+            color: #555;
+            line-height: 1.2;
+        }
+
+        .comments-section {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .comments-section h3 {
+            margin: 5px 0;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+<div class="a4-container">
+    <div class="header">
+        <div class="header-column">
+            <img src="classpath:/static/images/header_image.jpg"
+                 alt="Alexandria University Header"
+                 class="header-image" />
+        </div>
+    </div>
+
+    <div class="patient-info">
+        <div class="patient-info-left">
+            <p><strong>Patient Name:</strong> {{name}}</p>
+            <p><strong>Age:</strong> {{age}}</p>
+            <p><strong>Gender:</strong> {{gender}}</p>
+            <p><strong>Test ID:</strong> {{testid}}</p>
+        </div>
+        <div class="patient-info-right">
+            <p><strong>Sample Date:</strong> {{sampledate}}</p>
+            <p><strong>Print Date:</strong> {{printdate}}</p>
+            <p><strong>Referring Physician:</strong> {{dr}}</p>
+        </div>
+    </div>
+
+    <h1 class="report-title">COMPLETE BLOOD COUNT REPORT</h1>
+
+    <table class="test-results">
+        <thead>
+        <tr>
+            <th>Test</th>
+            <th>Result</th>
+            <th>Unit</th>
+            <th>Reference Range</th>
+            <th>Flag</th>
+        </tr>
+        </thead>
+        <tbody>
+            {{tests}}
+        </tbody>
+    </table>
+
+    <div class="comments-section">
+        <h3>REPORT COMMENTS:</h3>
+        <p>{{comments}} </p>
+
+    </div>
+
+    <div class="notes">
+        <p><strong>Notes:</strong></p>
+        <ul>
+            <li>H - High (Above reference range)</li>
+            <li>L - Low (Below reference range)</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <div class="signature-area">
+            <p>Technologist:</p>
+            <p>Name/Signature/Date</p>
+        </div>
+        <div class="signature-area">
+            <p>Approved by:</p>
+            <p>Pathologist/Signature/Date</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
