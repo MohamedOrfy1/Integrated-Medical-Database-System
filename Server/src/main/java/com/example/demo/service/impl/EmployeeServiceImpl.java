@@ -5,6 +5,7 @@ import com.example.demo.service.EmployeeService;
 import com.example.demo.model.Visit;
 import java.time.LocalDate;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         boolean isRegisteredDate = visitRepository.existsById_PatientIdAndId_RegistrationDate(patientID,LocalDate.now());
 
         if(isRegisteredDate){
-            System.out.println("in");
                 AdmissionId id = new AdmissionId();
                 id.setPatientId(patientID);
                 id.setAdmissionDate(LocalDate.now());

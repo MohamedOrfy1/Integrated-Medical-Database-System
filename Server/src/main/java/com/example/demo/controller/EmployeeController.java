@@ -91,14 +91,15 @@ public class EmployeeController {
 
 
 
-    @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException { //it downloads the file
+    @PostMapping("/genReport")
+    public ResponseEntity<Resource> downloadFile(@RequestBody String ReportJson) throws IOException { //it downloads the file
         try {
 
-            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders());
-        }catch(Exception e){}
+            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders(ReportJson));
+        }catch(Exception e){
+        }
 
-        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve(fileName).normalize().toUri());
+        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/pdf"))
