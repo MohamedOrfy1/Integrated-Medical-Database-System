@@ -52,5 +52,27 @@ export const PatientService = {
             console.error('Error in addPatient:', error);
             throw error;
         }
+    },
+
+    async checkPatientVisit(date) {
+        const response = await fetch(`http://localhost:8080/patients/checkVisit/${date}`);
+        if (!response.ok) {
+            throw new Error('Failed to check patient visit');
+        }
+        return await response.json();
+    },
+
+    async checkPatientVisitByDate(date) {
+        const response = await fetch('http://localhost:8080/employee/getPatDate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ Date: date }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to check patient visit');
+        }
+        return await response.json();
     }
 }; 

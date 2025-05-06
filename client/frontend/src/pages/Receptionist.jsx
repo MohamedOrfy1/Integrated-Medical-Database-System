@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { PatientService } from '../services/PatientService';
+import { DoctorService } from '../services/DoctorService';
 import '../styles/Receptionist.css';
 
 const Receptionist = () => {
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [modalLoading, setModalLoading] = useState(false);
     const [error, setError] = useState('');
-    const [activeTab, setActiveTab] = useState('list'); // 'list' or 'form'
+    const [activeTab, setActiveTab] = useState('list');
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [doctors, setDoctors] = useState([]);
+    const [selectedDoctor, setSelectedDoctor] = useState('');
     const [newPatient, setNewPatient] = useState({
         patientId: '',
         firstName: '',
@@ -17,6 +23,12 @@ const Receptionist = () => {
         registrationDate: new Date().toISOString().split('T')[0],
         email: ''
     });
+    const [assignedPatients, setAssignedPatients] = useState([]);
+    const [patientId, setPatientId] = useState('');
+    const [visitDate, setVisitDate] = useState('');
+    const [visitResult, setVisitResult] = useState(null);
+    const [filteredPatients, setFilteredPatients] = useState([]);
+    const [filterDate, setFilterDate] = useState('');
 
     useEffect(() => {
         console.log('Receptionist component mounted');
@@ -95,6 +107,97 @@ const Receptionist = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleAssignClick = async (patient) => {
+        try {
+            setSelectedPatient(patient);
+            setModalLoading(true);
+            const doctorsData = await DoctorService.getAllDoctors();
+            setDoctors(doctorsData);
+            setShowAssignModal(true);
+        } catch (err) {
+            console.error('Error fetching doctors:', err);
+            setError('Failed to fetch doctors. Please try again.');
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
+    const handleAssignSubmit = async () => {
+        try {
+            setModalLoading(true);
+            const assignResult = await DoctorService.assignDoctorToPatient(selectedPatient.patientId, selectedDoctor);
+            if (assignResult === true) {
+                setAssignedPatients(prev => [...prev, selectedPatient.patientId]);
+                setShowAssignModal(false);
+                setSelectedPatient(null);
+                setSelectedDoctor('');
+                setError('');
+                await fetchPatients();
+            } else {
+                setError('Assignment failed. Please try again.');
+            }
+        } catch (err) {
+            console.error('Error in handleAssignSubmit:', err);
+            setError('Failed to assign patient to doctor. Please try again.');
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    const handleFilterByDate = (e) => {
+        e.preventDefault();
+        console.log('Filter by Date button pressed. Date:', filterDate);
+        if (!filterDate) {
+            setFilteredPatients([]);
+            setError('');
+            return;
+        }
+        const filtered = patients.filter(p => {
+            if (!p.registrationDate) return false;
+            let regDate = '';
+            if (Array.isArray(p.registrationDate) && p.registrationDate.length === 3) {
+                // registrationDate is [year, month, day]
+                const [year, month, day] = p.registrationDate;
+                regDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            } else if (typeof p.registrationDate === 'string') {
+                if (p.registrationDate.includes(',')) {
+                    // Format: "Aug 5, 2020"
+                    const monthMap = {
+                        Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+                        Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+                    };
+                    const [mon, day, year] = p.registrationDate.replace(',', '').split(' ');
+                    regDate = `${year}-${monthMap[mon]}-${day.padStart(2, '0')}`;
+                } else if (/^\d{4}-\d{2}-\d{2}/.test(p.registrationDate)) {
+                    regDate = p.registrationDate.slice(0, 10);
+                }
+            } else if (p.registrationDate instanceof Date) {
+                regDate = p.registrationDate.toISOString().split('T')[0];
+            }
+            console.log('Patient:', p, 'registrationDate:', p.registrationDate, 'parsed regDate:', regDate, 'filterDate:', filterDate);
+            return regDate === filterDate;
+        });
+        console.log('Filtered patients:', filtered);
+        setFilteredPatients(filtered);
+        setError('');
+    };
+
+    // Add a clear filter handler
+    const handleClearFilter = () => {
+        setFilterDate('');
+        setFilteredPatients([]);
     };
 
     return (
@@ -212,10 +315,65 @@ const Receptionist = () => {
                 </div>
             ) : (
                 <div className="patients-list">
-                    <h2>Patient List</h2>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h2>Patient List</h2>
+                        <form onSubmit={handleFilterByDate} style={{ display: 'flex', alignItems: 'center', gap: '0', background: '#f5f8fa', padding: '8px 16px', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                            <input
+                                type="date"
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                                style={{
+                                    height: '38px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '8px 0 0 8px',
+                                    padding: '0 12px',
+                                    fontSize: '1rem',
+                                    outline: 'none',
+                                    background: '#fff',
+                                }}
+                                placeholder="Select date"
+                            />
+                            <button
+                                type="submit"
+                                style={{
+                                    height: '38px',
+                                    background: '#2196f3',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '0',
+                                    padding: '0 18px',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                            >
+                                Filter by Date
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleClearFilter}
+                                style={{
+                                    height: '38px',
+                                    background: '#fff',
+                                    color: '#2196f3',
+                                    border: '1px solid #2196f3',
+                                    borderRadius: '0 8px 8px 0',
+                                    padding: '0 14px',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                    cursor: 'pointer',
+                                    marginLeft: '-1px',
+                                    transition: 'background 0.2s, color 0.2s',
+                                }}
+                            >
+                                Clear Filter
+                            </button>
+                        </form>
+                    </div>
                     {loading ? (
                         <p>Loading patients...</p>
-                    ) : patients.length > 0 ? (
+                    ) : (filteredPatients.length > 0 ? (
                         <table>
                             <thead>
                                 <tr>
@@ -224,6 +382,40 @@ const Receptionist = () => {
                                     <th>Phone Number</th>
                                     <th>Registration Date</th>
                                     <th>ID</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredPatients.map(patient => (
+                                    <tr key={patient.patientId}>
+                                        <td>{patient.firstName}</td>
+                                        <td>{patient.familyName}</td>
+                                        <td>{patient.phoneNumber}</td>
+                                        <td>{formatDate(patient.registrationDate)}</td>
+                                        <td>{patient.patientId}</td>
+                                        <td>
+                                            <button 
+                                                className="assign-button"
+                                                onClick={() => handleAssignClick(patient)}
+                                                disabled={assignedPatients.includes(patient.patientId)}
+                                            >
+                                                {assignedPatients.includes(patient.patientId) ? 'Assigned' : 'Assign to Doctor'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Registration Date</th>
+                                    <th>ID</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -232,15 +424,58 @@ const Receptionist = () => {
                                         <td>{patient.firstName}</td>
                                         <td>{patient.familyName}</td>
                                         <td>{patient.phoneNumber}</td>
-                                        <td>{patient.registrationDate}</td>
+                                        <td>{formatDate(patient.registrationDate)}</td>
                                         <td>{patient.patientId}</td>
+                                        <td>
+                                            <button 
+                                                className="assign-button"
+                                                onClick={() => handleAssignClick(patient)}
+                                                disabled={assignedPatients.includes(patient.patientId)}
+                                            >
+                                                {assignedPatients.includes(patient.patientId) ? 'Assigned' : 'Assign to Doctor'}
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    ) : (
-                        <p>No patients found</p>
-                    )}
+                    ))}
+                </div>
+            )}
+
+            {showAssignModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>Assign Doctor</h2>
+                        <p>Assigning doctor for patient: {selectedPatient?.name}</p>
+                        <div className="form-group">
+                            <select
+                                value={selectedDoctor}
+                                onChange={(e) => setSelectedDoctor(e.target.value)}
+                                required
+                                disabled={modalLoading}
+                            >
+                                <option value="">Select a doctor</option>
+                                {doctors.map((doctor) => (
+                                    <option key={doctor.doctorId} value={doctor.doctorId}>
+                                        {doctor.firstName} {doctor.lastName} ({doctor.docType})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="modal-buttons">
+                            <button onClick={handleAssignSubmit} disabled={modalLoading || !selectedDoctor}>
+                                {modalLoading ? 'Assigning...' : 'Assign'}
+                            </button>
+                            <button onClick={() => {
+                                setShowAssignModal(false);
+                                setSelectedPatient(null);
+                                setSelectedDoctor('');
+                            }} disabled={modalLoading}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
