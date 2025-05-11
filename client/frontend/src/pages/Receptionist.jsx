@@ -65,8 +65,6 @@ const Receptionist = () => {
         console.log('Submitting new patient:', newPatient);
         try {
             setLoading(true);
-            
-            // Format the patient data according to the backend model
             const formattedPatient = {
                 patientId: newPatient.patientId,
                 firstName: newPatient.firstName,
@@ -79,7 +77,6 @@ const Receptionist = () => {
                 name: `${newPatient.firstName} ${newPatient.familyName || ''}`.trim()
             };
             
-            // Convert to JSON string
             const patientJson = JSON.stringify(formattedPatient);
             console.log('Sending patient data to server:', patientJson);
             
@@ -168,12 +165,10 @@ const Receptionist = () => {
             if (!p.registrationDate) return false;
             let regDate = '';
             if (Array.isArray(p.registrationDate) && p.registrationDate.length === 3) {
-                // registrationDate is [year, month, day]
                 const [year, month, day] = p.registrationDate;
                 regDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             } else if (typeof p.registrationDate === 'string') {
                 if (p.registrationDate.includes(',')) {
-                    // Format: "Aug 5, 2020"
                     const monthMap = {
                         Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
                         Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
@@ -193,8 +188,7 @@ const Receptionist = () => {
         setFilteredPatients(filtered);
         setError('');
     };
-
-    // Add a clear filter handler
+    
     const handleClearFilter = () => {
         setFilterDate('');
         setFilteredPatients([]);
