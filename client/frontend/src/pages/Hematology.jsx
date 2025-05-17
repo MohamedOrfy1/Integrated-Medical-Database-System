@@ -16,9 +16,7 @@ function parseHematologyReport(htmlString) {
     });
 
     function getValueAfterLabelFont(label) {
-        // Normalize label for comparison
         const normLabel = label.replace(/[:\s]+/g, ' ').trim().toLowerCase();
-        // Find the <font> with a <b> child whose text includes the label
         const font = Array.from(doc.querySelectorAll('font')).find(el => {
             const b = el.querySelector('b');
             if (!b) return false;
@@ -26,19 +24,15 @@ function parseHematologyReport(htmlString) {
             return txt.includes(normLabel);
         });
         if (font) {
-            // Go up to the parent <td>
             let td = font.closest('td');
             if (td) {
-                // Go up to the parent <tr>
                 let tr = td.closest('tr');
                 if (tr) {
-                    // Get all <td>s in this <tr>
                     const tds = Array.from(tr.querySelectorAll('td'));
                     const idx = tds.indexOf(td);
                     // Find the next non-empty <td> after the label <td>
                     for (let i = idx + 1; i < tds.length; i++) {
                         const valueTd = tds[i];
-                        // Look for <tt> first, then <font>, then textContent
                         const tt = valueTd.querySelector('tt');
                         if (tt && tt.textContent.trim()) return tt.textContent.trim();
                         const fontVal = valueTd.querySelector('font');
@@ -61,9 +55,7 @@ function parseHematologyReport(htmlString) {
         const tests = [];
         const metaMap = {};
         CBC_TESTS.forEach(meta => {
-            // Map main name
             metaMap[normalizeTestName(meta.name)] = meta;
-            // Map aliases
             if (meta.aliases && Array.isArray(meta.aliases)) {
                 meta.aliases.forEach(alias => {
                     metaMap[normalizeTestName(alias)] = meta;
@@ -77,10 +69,8 @@ function parseHematologyReport(htmlString) {
         Array.from(doc.querySelectorAll('font')).forEach(font => {
             const rawName = font.textContent.trim();
             const normName = normalizeTestName(rawName);
-            // Debug: log each HTML test candidate
             console.log('HTML test candidate:', rawName, '->', normName);
             if (metaMap[normName]) {
-                // Go up to the parent <td> and <tr>
                 let td = font.closest('td');
                 if (td) {
                     let tr = td.closest('tr');
@@ -94,7 +84,6 @@ function parseHematologyReport(htmlString) {
                             let value = '';
                             if (tt && tt.textContent.trim()) value = tt.textContent.trim();
                             else if (valueTd.textContent.trim()) value = valueTd.textContent.trim();
-                            // Only accept if value looks like a number (or number with decimal)
                             if (/^-?\d+(\.\d+)?$/.test(value.replace(/,/g, ''))) {
                                 const numValue = parseFloat(value.replace(/,/g, ''));
                                 let flag = '';
@@ -138,7 +127,7 @@ function parseHematologyReport(htmlString) {
 
     // 3. Patient Name
     let patientName = getValueAfterLabelFont('Patient Name');
-
+    console.log("Patient Name:", patientName);
     // 4. Age
     let age = getValueAfterLabelFont('Age');
     if (age) {
@@ -183,7 +172,6 @@ function parseHematologyReport(htmlString) {
         }
     }
     console.log('Report comments:', report_comments);
-    // Return in the nested structure expected by the form
     return {
         patient_info: {
             name: patientName || '',

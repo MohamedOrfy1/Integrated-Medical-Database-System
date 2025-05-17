@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:8080/employee';
 
 export const HematologyService = {
     generateReport: async (reportData) => {
+        console.log("reportData", reportData);
         try {
             const response = await axios.post(`${API_URL}/genReport`, reportData, {
                 responseType: 'blob'
@@ -20,12 +21,9 @@ export const HematologyService = {
             reader.onload = (event) => {
                 try {
                     const htmlContent = event.target.result;
-                    // Create a temporary DOM element to parse the HTML
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
-                    // Extract data from the HTML
-                    // This is a placeholder - you'll need to adjust the selectors based on your HTML structure
                     const extractedData = {
                         patient_info: {
                             name: doc.querySelector('.patient-name')?.textContent || '',
