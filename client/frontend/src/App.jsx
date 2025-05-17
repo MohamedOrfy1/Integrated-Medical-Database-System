@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Department from './pages/Department';
 import Receptionist from './pages/Receptionist';
+import Hematology from './pages/Hematology';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/department" element={<Department />} />
             <Route path="/receptionist" element={<Receptionist />} />
+            <Route path="/hematology" element={<Hematology />} />
           </Routes>
         </main>
       </div>

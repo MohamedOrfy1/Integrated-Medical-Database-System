@@ -22,7 +22,7 @@ public class PDFGenServiceImpl implements PDFGenService {
     @Override
     public boolean convertXhtmlToPdf(String HtmlString) throws Exception{
         System.out.println("1");
-        String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/" ;
+        String FILE_DIRECTORY = "Server/src/main/java/com/example/demo/PDFDocs/" ;
         System.out.println("2");
         Path filePath = Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize();
         System.out.println("3");
@@ -49,11 +49,12 @@ public class PDFGenServiceImpl implements PDFGenService {
         System.out.println("1.6");
         try {
             System.out.println("1.7");
-            byte[] bytes = Files.readAllBytes(Paths.get("src/main/resources/templates/report.html"));
+            byte[] bytes = Files.readAllBytes(Paths.get("Server/src/main/resources/templates/report.html"));
             System.out.println("1.5.1");
             return new String(bytes, StandardCharsets.UTF_8);
         }catch(Exception e)
         {
+            
             System.out.println("sdfsdf");
         }
         System.out.println("1.5");

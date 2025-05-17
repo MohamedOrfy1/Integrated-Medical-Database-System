@@ -153,7 +153,7 @@ const Receptionist = () => {
         });
     };
 
-    const handleFilterByDate = (e) => {
+    const handleFilterByDate = async (e) => {
         e.preventDefault();
         console.log('Filter by Date button pressed. Date:', filterDate);
         if (!filterDate) {
@@ -161,32 +161,22 @@ const Receptionist = () => {
             setError('');
             return;
         }
-        const filtered = patients.filter(p => {
-            if (!p.registrationDate) return false;
-            let regDate = '';
-            if (Array.isArray(p.registrationDate) && p.registrationDate.length === 3) {
-                const [year, month, day] = p.registrationDate;
-                regDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            } else if (typeof p.registrationDate === 'string') {
-                if (p.registrationDate.includes(',')) {
-                    const monthMap = {
-                        Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
-                        Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
-                    };
-                    const [mon, day, year] = p.registrationDate.replace(',', '').split(' ');
-                    regDate = `${year}-${monthMap[mon]}-${day.padStart(2, '0')}`;
-                } else if (/^\d{4}-\d{2}-\d{2}/.test(p.registrationDate)) {
-                    regDate = p.registrationDate.slice(0, 10);
-                }
-            } else if (p.registrationDate instanceof Date) {
-                regDate = p.registrationDate.toISOString().split('T')[0];
-            }
-            console.log('Patient:', p, 'registrationDate:', p.registrationDate, 'parsed regDate:', regDate, 'filterDate:', filterDate);
-            return regDate === filterDate;
-        });
-        console.log('Filtered patients:', filtered);
-        setFilteredPatients(filtered);
-        setError('');
+        try {
+            const filtered = await PatientService.checkPatientVisitByDate(filterDate);
+            // Normalize registrationDate
+            const normalized = filtered.map(p => ({
+                ...p,
+                registrationDate: Array.isArray(p.registrationDate)
+                    ? `${p.registrationDate[0]}-${String(p.registrationDate[1]).padStart(2, '0')}-${String(p.registrationDate[2]).padStart(2, '0')}`
+                    : p.registrationDate
+            }));
+            setFilteredPatients(normalized);
+            console.log(filtered)
+            setError('');
+        } catch (err) {
+            console.error('Error in handleFilterByDate:', err);
+            setError('Failed to filter patients by date. Please try again.');
+        }
     };
     
     const handleClearFilter = () => {

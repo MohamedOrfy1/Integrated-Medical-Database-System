@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping("/employee")
 public class EmployeeController {
 
-    private  final String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/" ;
+    private  final String FILE_DIRECTORY = "Server/src/main/java/com/example/demo/PDFDocs/" ;
     private String html =  "";
 
 
