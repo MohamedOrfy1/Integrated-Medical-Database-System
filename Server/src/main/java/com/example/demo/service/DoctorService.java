@@ -12,4 +12,5 @@ public interface DoctorService {
     String getAllDiagnosisJson();
     String getDoctorsInJson();
     String getPatientsDiagnosedby(String DiagnosisId);
+    String getDocID(String username,String pass);
 }

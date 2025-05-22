@@ -2,14 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.service.CommonService;
 import com.example.demo.service.DoctorService;
+import com.example.demo.service.impl.JWTServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import com.example.demo.model.Doctor;
-import org.springframework.http.ResponseEntity;
+import com.example.demo.service.PDFGenService;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
@@ -21,6 +24,8 @@ public class DoctorController {
 
     private final DoctorService doctorService;
     private final CommonService commonService;
+    private final PDFGenService pdfGenService;
+    private final JWTServiceImpl jwtService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -28,24 +33,35 @@ public class DoctorController {
 
 
     @Autowired
-    public DoctorController(DoctorService doctorService, CommonService commonService) {
+    public DoctorController(DoctorService doctorService, CommonService commonService,PDFGenService pdfGenService,JWTServiceImpl jwtService) {
         this.doctorService = doctorService;
         this.commonService = commonService;
+        this.pdfGenService = pdfGenService;
+        this.jwtService = jwtService;
 
     }
 
+    @PreAuthorize("hasAuthority('EMP')")
     @GetMapping("/getdoc")
     public String getDoctors() { return doctorService.getDoctorsInJson(); }
 
 
     @PostMapping("/login")
-    public boolean login(@RequestBody Doctor doc) {
+    public String login(@RequestBody Doctor doc) {
         String username = doc.getUsername();
         String password = doc.getPassword();
 
         String sql = "SELECT COUNT(*) FROM Doctor WHERE username = ? AND password = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
-        return count > 0;
+        if (count > 0){
+            String id = doctorService.getDocID(username,password);
+            String role = "DOC";
+            return jwtService.generateToken(id,role);
+
+        }else{
+            return "false";
+        }
+
 
     }
 
@@ -55,6 +71,7 @@ public class DoctorController {
         return ResponseEntity.ok(dig);
     }
 
+    @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatDiagnosis")
     public ResponseEntity<String> getPatientsByDiagnosis(@RequestBody String DiagnosisId) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -68,6 +85,7 @@ public class DoctorController {
         }
     }
 
+
     @GetMapping("/{id}")
     public Doctor getDoctorById(@PathVariable Long id) {
         return doctorService.getDoctorById(id);
@@ -77,4 +95,5 @@ public class DoctorController {
     public void deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);
     }
+
 }

@@ -8,7 +8,7 @@ public interface EmployeeService {
     boolean registerPatient(String employeeID,String patientID);
     boolean assignDocToPatient(String doctorID, String patientID);
     String getPatientsByRegisterDateJson(LocalDate date);
-
+    String getEmpID(String username,String password);
 
 
 }

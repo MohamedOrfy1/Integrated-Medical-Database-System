@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.model.Patient;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class PatientController {
         this.patientService = patientservice;
     }
 
+    @PreAuthorize("hasAuthority('EMP')")
     @GetMapping("/getPatients")
     public String getAllPatients() {
         return patientService.getPatientsInJson();
@@ -33,6 +35,8 @@ public class PatientController {
 
 
 
+
+    @PreAuthorize("hasAuthority('EMP')")
     @PostMapping("/add")
     @Transactional
     public ResponseEntity<Boolean> addPatient(@RequestBody String JsonPatient) {
@@ -40,7 +44,6 @@ public class PatientController {
         else return ResponseEntity.ok(false);
 
     }
-
 
 
     @GetMapping("/{id}")

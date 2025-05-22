@@ -12,6 +12,7 @@ import com.example.demo.service.DoctorService;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
@@ -35,6 +36,12 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
+    }
+
+    @Override
+    public String getDocID(String username,String pass){
+        Optional<Doctor> d = doctorRepository.findByUsernameAndPassword(username,pass);
+        return d.map(Doctor::getDoctorId).orElse(null);
     }
 
     @Override

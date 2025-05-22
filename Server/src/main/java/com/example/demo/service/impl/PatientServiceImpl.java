@@ -21,6 +21,7 @@ public class PatientServiceImpl implements PatientService {
         this.patientRepository = patientRepository;
     }
 
+
     @Override
     public Boolean InsertJsonPatient (String JsonPatient) {
 
