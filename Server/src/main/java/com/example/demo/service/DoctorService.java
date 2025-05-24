@@ -15,4 +15,6 @@ public interface DoctorService {
     String getPatientsDiagnosedby(String DiagnosisId);
     String getDocID(String username,String pass);
     boolean diagnosePatient(String diagnosisId, LocalDate diagnosisDate, String doctorId, String PatientId);
+    String getPatientsDoc(String DocID);
 }
+

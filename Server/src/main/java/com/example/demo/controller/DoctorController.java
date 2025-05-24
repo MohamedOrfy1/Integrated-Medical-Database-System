@@ -85,7 +85,20 @@ public class DoctorController {
         }
     }
 
+    /*@PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/getPatient")
+    public String getPatient() {
+        String patientData = null;
 
+        return patientData;
+    }*/
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/getDocPatients")
+    public String getDocPatients(@RequestHeader("Authorization") String authHeader) {
+        String docId = jwtService.getIDFromToken(authHeader.substring(7));
+        return doctorService.getPatientsDoc(docId);
+    }
 
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/diagnosePatient")

@@ -21,12 +21,15 @@ public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
     private final DiagnosisRepository diagnosisRepository;
     private final PatientDiagnosisRepository patientDiagnosisRepository;
+    private final AdmissionRepository admissionRepository;
 
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository,
+                             AdmissionRepository admissionRepository) {
         this.doctorRepository = doctorRepository;
         this.diagnosisRepository = diagnosisRepository;
         this.patientDiagnosisRepository = patientDiagnosisRepository;
+        this.admissionRepository = admissionRepository;
     }
 
     @Override
@@ -99,6 +102,19 @@ public class DoctorServiceImpl implements DoctorService {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.writeValueAsString(pat);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    @Override
+    public String getPatientsDoc(String DocID){
+        List <Patient> pats = admissionRepository.findPatientsByDoctorId(DocID);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.writeValueAsString(pats);
         } catch (Exception e) {
             System.out.println(e);
             return null;

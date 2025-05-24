@@ -24,6 +24,10 @@ public interface AdmissionRepository extends JpaRepository<Admission, AdmissionI
     // Find all admissions for a specific patient
     List<Admission> findByPatient_PatientId(String patientId);
 
+
+    @Query("SELECT a.patient FROM Admission a WHERE a.doctor.doctorId = :doctorId")
+    List<Patient> findPatientsByDoctorId(@Param("doctorId") String doctorId);
+
     // Find all admissions by a specific doctor
     List<Admission> findByDoctor_DoctorId(String doctorId);
 
