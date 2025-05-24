@@ -11,6 +11,7 @@ import  com.example.demo.model.*;
 import com.example.demo.service.DoctorService;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +85,11 @@ public class DoctorServiceImpl implements DoctorService {
             System.out.println(e);
             return null;
         }
+    }
+
+    @Override
+    public boolean diagnosePatient(String diagnosisId, LocalDate diagnosisDate,String doctorId,String PatientId){
+        return patientDiagnosisRepository.insertPatientDiagnosis(PatientId, diagnosisId, diagnosisDate, doctorId) > 0;
     }
 
     @Override

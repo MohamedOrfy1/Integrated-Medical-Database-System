@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Getter
@@ -14,11 +15,15 @@ import java.util.Objects;
 @Embeddable
 public class PatientDiagnosisId implements Serializable {
     private static final long serialVersionUID = -4784497829028932209L;
-    @Column(name = "diagnosis_code", nullable = false, length = 25)
+
+    @Column(name = "diagnosis_code", nullable = false, length = 10)
     private String diagnosisCode;
 
-    @Column(name = "patient_id", nullable = false, length = 14)
+    @Column(name = "patient_id", nullable = false, length = 15)
     private String patientId;
+
+    @Column(name = "diagnosis_date", nullable = false)
+    private LocalDate diagnosisDate;
 
     @Override
     public boolean equals(Object o) {
@@ -26,12 +31,12 @@ public class PatientDiagnosisId implements Serializable {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         PatientDiagnosisId entity = (PatientDiagnosisId) o;
         return Objects.equals(this.patientId, entity.patientId) &&
-                Objects.equals(this.diagnosisCode, entity.diagnosisCode);
+                Objects.equals(this.diagnosisCode, entity.diagnosisCode) &&
+                Objects.equals(this.diagnosisDate, entity.diagnosisDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(patientId, diagnosisCode);
+        return Objects.hash(patientId, diagnosisCode, diagnosisDate);
     }
-
 }

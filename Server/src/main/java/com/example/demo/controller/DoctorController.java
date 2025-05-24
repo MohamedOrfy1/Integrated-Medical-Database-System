@@ -86,10 +86,32 @@ public class DoctorController {
     }
 
 
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/diagnosePatient")
+    public ResponseEntity<Boolean> diagnosPatient(@RequestBody String PatientJsonDiagnosis,@RequestHeader("Authorization") String authHeader) {
+        String docId = jwtService.getIDFromToken(authHeader.substring(7));
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(PatientJsonDiagnosis);
+            String diagnosisId = rootNode.path("DiagnosisId").asText();
+            LocalDate diagnosisDate = LocalDate.parse(rootNode.path("DiagnosisDate").asText());
+            String PatientId =  rootNode.path("PatientId").asText();
+
+            return ResponseEntity.ok(doctorService.diagnosePatient(diagnosisId,diagnosisDate,docId,PatientId));
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.ok(false);
+        }
+    }
+
+
     @GetMapping("/{id}")
     public Doctor getDoctorById(@PathVariable Long id) {
         return doctorService.getDoctorById(id);
     }
+
+
 
     @DeleteMapping("/{id}")
     public void deleteDoctor(@PathVariable Long id) {

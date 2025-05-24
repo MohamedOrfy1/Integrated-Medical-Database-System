@@ -20,9 +20,6 @@ public class BloodTest {
     @Column(name = "test_type", nullable = false, length = 10)
     private String testType;
 
-    @Column(name = "report_path")
-    private String reportPath;
-
     @Column(name = "sample_date", nullable = false)
     private LocalDate sampleDate;
 
