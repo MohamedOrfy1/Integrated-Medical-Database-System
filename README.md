@@ -76,8 +76,10 @@ The `target` directory is automatically generated when you run `mvn package`.
 | GET    | `employees/download/output.pdf` | generate and download randomized CBC test result report    | empty body                  | PDF File                                          |
 | POST   | `doctors/getPatDiagnosis`       |                                                            |                             |                                                   |
 | GET    | `doctors/getPatDiagnosis`       |                                                            |                             |                                                   |
-| GET    | `/doctors/getDiagnosis`         |                                                            |                             |                                                   |
+| GET    | `/doctors/getDiagnosis`         |return all diagnoses names and codes in diagnosis table                                                            |   empty body                          |  list of json objects of type diagnosis                                                 |
 | POST   | `employee/getPatDate`           |                                                            |                             |                                                   |
+| POST   | `doctors/addDiagnosis`           |   add a new diagnosis                                                         |   json object of type diagnosis                          |                                                   |
+| Delete   | `doctors/diagnosis/{diagnosisCode}`           |    delete diagnosis by code                                                        |                             |                                                   |
  ---
 
 
