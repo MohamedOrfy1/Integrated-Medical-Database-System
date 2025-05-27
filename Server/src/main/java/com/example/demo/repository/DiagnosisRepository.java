@@ -2,7 +2,9 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Diagnosis;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,5 +32,11 @@ public interface DiagnosisRepository extends JpaRepository<Diagnosis, String> {
 
     // Find diagnoses ordered by name
     List<Diagnosis> findAllByOrderByDiagnosisNameAsc();
+    boolean existsByDiagnosisCode(String diagnosisCode);
+    @Modifying
+    @Query("DELETE FROM Diagnosis d WHERE d.diagnosisCode = :code")
+    int deleteByDiagnosisCode(@Param("code") String code);
+    @Query(value = "SELECT COUNT(*) FROM patient_diagnosis WHERE diagnosis_code = :code", nativeQuery = true)
+    int isDiagnosisInUse(@Param("code") String code);
 
 }

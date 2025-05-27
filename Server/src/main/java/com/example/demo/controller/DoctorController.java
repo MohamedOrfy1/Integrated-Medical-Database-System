@@ -1,12 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Diagnosis;
 import com.example.demo.service.CommonService;
 import com.example.demo.service.DoctorService;
 import com.example.demo.service.impl.JWTServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
@@ -16,6 +19,9 @@ import com.example.demo.service.PDFGenService;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RestController
@@ -64,14 +70,42 @@ public class DoctorController {
 
 
     }
-
+    //@PreAuthorize("hasAuthority('DOC')")
     @GetMapping("/getDiagnosis")
     public ResponseEntity<String> getAllDiagnosis() {
         String dig = doctorService.getAllDiagnosisJson();
         return ResponseEntity.ok(dig);
     }
-
-    @PreAuthorize("hasAuthority('DOC')")
+   //@PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/addDiagnosis")
+    public ResponseEntity<String> addDiagnosis(@RequestBody Diagnosis diagnosis) {
+        try {
+            if (doctorService.addDiagnosis(diagnosis.getDiagnosisCode(), diagnosis.getDiagnosisName())) {
+                return ResponseEntity.ok("Diagnosis added successfully");
+            } else {
+                return ResponseEntity.badRequest().body("Diagnosis code already exists or invalid data");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error adding diagnosis");
+        }
+    }
+    //@PreAuthorize("hasAuthority('DOC')")
+    @DeleteMapping("/diagnoses/{diagnosisCode}")
+    public ResponseEntity<?> deleteDiagnosis(@PathVariable String diagnosisCode) {
+        try {
+            boolean deleted = doctorService.deleteDiagnosis(diagnosisCode);
+            return deleted
+                    ? ResponseEntity.noContent().build()
+                    : ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Cannot delete diagnosis");
+                        put("message", e.getMessage());
+                    }});
+        }
+    }
+    //@PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatDiagnosis")
     public ResponseEntity<String> getPatientsByDiagnosis(@RequestBody String DiagnosisId) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -93,7 +127,7 @@ public class DoctorController {
         return patientData;
     }*/
 
-    @PreAuthorize("hasAuthority('DOC')")
+    //@PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getDocPatients")
     public String getDocPatients(@RequestHeader("Authorization") String authHeader) {
         String docId = jwtService.getIDFromToken(authHeader.substring(7));
