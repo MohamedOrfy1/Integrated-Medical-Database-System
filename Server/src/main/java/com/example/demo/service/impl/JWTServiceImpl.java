@@ -4,7 +4,6 @@ package com.example.demo.service.impl;
 import com.example.demo.service.JWTService;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.*;
-
 import java.util.Date;
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -18,7 +17,7 @@ public class JWTServiceImpl implements JWTService {
     public String generateToken(String id, String role) {
         return Jwts.builder()
                 .setSubject(id)
-                .claim("role", role)  // Single role claim
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationDuration))
                 .signWith(SignatureAlgorithm.HS512, secret)

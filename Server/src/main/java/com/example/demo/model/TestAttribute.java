@@ -17,7 +17,7 @@ public class TestAttribute {
     @JoinColumn(name = "test_id", nullable = false)
     private BloodTest test;
 
-    @Column(name = "attribute_value")
-    private Integer attributeValue;
+    @Column(name = "attribute_value", columnDefinition = "numeric(6,3)")
+    private double attributeValue;
 
 }

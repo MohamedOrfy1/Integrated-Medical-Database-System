@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Doctor;
 import com.example.demo.service.EmployeeService;
 import com.example.demo.service.PDFGenService;
 import com.example.demo.service.impl.JWTServiceImpl;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.model.Employee;
 

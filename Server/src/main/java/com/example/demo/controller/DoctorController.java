@@ -63,6 +63,22 @@ public class DoctorController {
         }
 
 
+
+
+    }
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/getPatTestsIds")
+    public ResponseEntity<String> getPatTestsIds(@RequestBody String PatientID) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(PatientID);
+            String pt = rootNode.path("PatientID").asText();
+            return ResponseEntity.ok(doctorService.getPatTestsIds(pt));
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+
     }
 
     @GetMapping("/getDiagnosis")
@@ -70,6 +86,7 @@ public class DoctorController {
         String dig = doctorService.getAllDiagnosisJson();
         return ResponseEntity.ok(dig);
     }
+
 
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatDiagnosis")
@@ -84,6 +101,20 @@ public class DoctorController {
             return null;
         }
     }
+
+    /*@PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/getReportTest")
+    public ResponseEntity<String> getReportTest(@RequestBody String TestId) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(TestId);
+            String tid = rootNode.path("TestId").asText();
+            return ResponseEntity.ok(PDFGenService.(tid));
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }*/
 
     /*@PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatient")

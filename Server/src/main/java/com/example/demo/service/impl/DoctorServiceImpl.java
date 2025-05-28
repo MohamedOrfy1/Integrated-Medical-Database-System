@@ -5,6 +5,7 @@ import com.example.demo.service.DoctorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import  com.example.demo.model.*;
@@ -22,14 +23,16 @@ public class DoctorServiceImpl implements DoctorService {
     private final DiagnosisRepository diagnosisRepository;
     private final PatientDiagnosisRepository patientDiagnosisRepository;
     private final AdmissionRepository admissionRepository;
+    private final PatientTestRepository patientTestRepository;
 
     @Autowired
     public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository,
-                             AdmissionRepository admissionRepository) {
+                             AdmissionRepository admissionRepository,PatientTestRepository patientTestRepository) {
         this.doctorRepository = doctorRepository;
         this.diagnosisRepository = diagnosisRepository;
         this.patientDiagnosisRepository = patientDiagnosisRepository;
         this.admissionRepository = admissionRepository;
+        this.patientTestRepository = patientTestRepository;
     }
 
     @Override
@@ -115,6 +118,19 @@ public class DoctorServiceImpl implements DoctorService {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.writeValueAsString(pats);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    @Override
+    public String getPatTestsIds(String PatID){
+        List<Integer> testIDs = patientTestRepository.findTestIdsByPatientId(PatID);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.writeValueAsString(testIDs);
         } catch (Exception e) {
             System.out.println(e);
             return null;

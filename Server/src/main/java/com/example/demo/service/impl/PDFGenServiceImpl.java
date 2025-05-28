@@ -3,12 +3,10 @@ package com.example.demo.service.impl;
 import com.example.demo.service.PDFGenService;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
-import java.util.regex.*;
 import java.nio.file.Files;
 import java.util.Map;
 import org.json.JSONArray;
 import java.nio.file.Paths;
-import java.util.Random;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
@@ -70,8 +68,8 @@ public class PDFGenServiceImpl implements PDFGenService {
         String printDate = testdetails.getString("print_date");
         String dr = testdetails.getString("referring_physician");
 
-        JSONObject bloodReport = root.getJSONObject("blood_count_report");System.out.println("1.441654");
-        JSONArray tests = bloodReport.getJSONArray("tests");System.out.println("1.45450004");
+        JSONObject bloodReport = root.getJSONObject("blood_count_report");
+        JSONArray tests = bloodReport.getJSONArray("tests");
         String comments = bloodReport.getString("report_comments");
 
         String html = htmlFileToString();
