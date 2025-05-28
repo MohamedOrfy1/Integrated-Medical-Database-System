@@ -1,4 +1,9 @@
+import axios from 'axios';
+
 const API_URL = 'http://localhost:8080';
+
+// Configure axios defaults
+axios.defaults.withCredentials = true;
 
 export const DoctorService = {
     // Get all doctors
@@ -54,6 +59,43 @@ export const DoctorService = {
             return data;
         } catch (error) {
             console.error('Error in assignDoctorToPatient:', error);
+            throw error;
+        }
+    },
+
+    getAssignedPatients: async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await axios.post(`${API_URL}/doctors/getDocPatients`, null, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching assigned patients:', error);
+            throw error;
+        }
+    },
+
+    addDiagnosis: async (patientId, doctorId, diagnosisData) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${API_URL}/doctors/${doctorId}/patients/${patientId}/diagnosis`,
+                diagnosisData,
+                {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error adding diagnosis:', error);
             throw error;
         }
     }

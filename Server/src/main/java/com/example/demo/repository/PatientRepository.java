@@ -11,9 +11,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import jakarta.persistence.Tuple;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
+
+
+
 
     // Find by patient_id (custom ID)
     Optional<Patient> findByPatientId(String patientId);

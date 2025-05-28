@@ -11,7 +11,9 @@ import  com.example.demo.model.*;
 import com.example.demo.service.DoctorService;
 
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
@@ -19,12 +21,15 @@ public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
     private final DiagnosisRepository diagnosisRepository;
     private final PatientDiagnosisRepository patientDiagnosisRepository;
+    private final AdmissionRepository admissionRepository;
 
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository,
+                             AdmissionRepository admissionRepository) {
         this.doctorRepository = doctorRepository;
         this.diagnosisRepository = diagnosisRepository;
         this.patientDiagnosisRepository = patientDiagnosisRepository;
+        this.admissionRepository = admissionRepository;
     }
 
     @Override
@@ -35,6 +40,12 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
+    }
+
+    @Override
+    public String getDocID(String username,String pass){
+        Optional<Doctor> d = doctorRepository.findByUsernameAndPassword(username,pass);
+        return d.map(Doctor::getDoctorId).orElse(null);
     }
 
     @Override
@@ -80,12 +91,30 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public boolean diagnosePatient(String diagnosisId, LocalDate diagnosisDate,String doctorId,String PatientId){
+        return patientDiagnosisRepository.insertPatientDiagnosis(PatientId, diagnosisId, diagnosisDate, doctorId) > 0;
+    }
+
+    @Override
     public String getPatientsDiagnosedby(String DiagnosisId){
         List <Patient> pat = patientDiagnosisRepository.findPatientsWithDiagnosis(DiagnosisId);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.writeValueAsString(pat);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    @Override
+    public String getPatientsDoc(String DocID){
+        List <Patient> pats = admissionRepository.findPatientsByDoctorId(DocID);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.writeValueAsString(pats);
         } catch (Exception e) {
             System.out.println(e);
             return null;

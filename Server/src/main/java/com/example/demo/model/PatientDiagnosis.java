@@ -16,15 +16,27 @@ public class PatientDiagnosis {
 
     @MapsId("diagnosisCode")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "diagnosis_code", nullable = false)
-    private Diagnosis diagnosisCode;
+    @JoinColumn(name = "diagnosis_code", nullable = false, insertable = false, updatable = false)
+    private Diagnosis diagnosis;
 
     @MapsId("patientId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = false, insertable = false, updatable = false)
     private Patient patient;
 
-    @Column(name = "diagnosis_date", nullable = false)
-    private LocalDate diagnosisDate;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
 
+    // Helper method to access diagnosis date
+    public LocalDate getDiagnosisDate() {
+        return id != null ? id.getDiagnosisDate() : null;
+    }
+
+    public void setDiagnosisDate(LocalDate diagnosisDate) {
+        if (id == null) {
+            id = new PatientDiagnosisId();
+        }
+        id.setDiagnosisDate(diagnosisDate);
+    }
 }

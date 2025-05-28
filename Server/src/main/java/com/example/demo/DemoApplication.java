@@ -1,18 +1,21 @@
 package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class DemoApplication {
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure().load();
+
+        Dotenv dotenv = Dotenv.configure().directory("./src/main/resources").load();
+
         System.setProperty("POSTGRES_PORT", dotenv.get("POSTGRES_PORT"));
         System.setProperty("POSTGRES_USER", dotenv.get("POSTGRES_USER"));
         System.setProperty("POSTGRES_PASSWORD", dotenv.get("POSTGRES_PASSWORD"));
         System.setProperty("PEPPER", dotenv.get("PEPPER"));
+
+
 
         SpringApplication.run(DemoApplication.class, args);
     }

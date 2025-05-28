@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import com.example.demo.model.Doctor;
 import com.example.demo.model.Employee;
 import com.example.demo.model.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,6 +41,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Modifying
     @Query("UPDATE Employee e SET e.password = :password WHERE e.employeeId = :employeeId")
     int updatePassword(@Param("employeeId") String employeeId, @Param("password") String password);
+
+    @Query("SELECT d FROM Employee d WHERE d.username = :username AND d.password = :password")
+    Optional<Employee> findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 
     // Find employee with department details (eager fetch)
     @Query("SELECT e FROM Employee e JOIN FETCH e.dept WHERE e.employeeId = :employeeId")

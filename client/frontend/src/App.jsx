@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -7,22 +8,92 @@ import About from './pages/About';
 import Department from './pages/Department';
 import Receptionist from './pages/Receptionist';
 import Hematology from './pages/Hematology';
+import Unauthorized from './pages/Unauthorized';
+import ProtectedRoute from './components/ProtectedRoute';
+import DoctorDashboard from './pages/DoctorDashboard';
 import './App.css';
+
+// Route change logger component
+const RouteLogger = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log('Route Change:', {
+      path: location.pathname,
+      state: location.state,
+      timestamp: new Date().toISOString()
+    });
+  }, [location]);
+
+  return null;
+};
 
 function App() {
   return (
     <Router>
       <div className="app">
         <Navbar />
+        <RouteLogger />
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
+            {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/department" element={<Department />} />
-            <Route path="/receptionist" element={<Receptionist />} />
-            <Route path="/hematology" element={<Hematology />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+
+            {/* Protected routes */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <ProtectedRoute>
+                  <About />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/department"
+              element={
+                <ProtectedRoute>
+                  <Department />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hematology"
+              element={
+                <ProtectedRoute allowedRoles={['DOC']}>
+                  <Hematology />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/receptionist"
+              element={
+                <ProtectedRoute allowedRoles={['EMP']}>
+                  <Receptionist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['DOC']}>
+                  <DoctorDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Redirect root to login */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/unauthorized" replace />} />
           </Routes>
         </main>
       </div>

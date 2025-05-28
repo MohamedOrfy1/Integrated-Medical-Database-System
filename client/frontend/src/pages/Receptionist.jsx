@@ -29,10 +29,23 @@ const Receptionist = () => {
     const [visitResult, setVisitResult] = useState(null);
     const [filteredPatients, setFilteredPatients] = useState([]);
     const [filterDate, setFilterDate] = useState('');
+    const [employeeId, setEmployeeId] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         console.log('Receptionist component mounted');
         fetchPatients();
+        // Get employee ID from token
+        const token = localStorage.getItem('token');
+        if (token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const decodedToken = JSON.parse(jsonPayload);
+            setEmployeeId(decodedToken.sub); // 'sub' is the standard JWT claim for subject (ID)
+        }
     }, []);
 
     const fetchPatients = async () => {
@@ -184,10 +197,87 @@ const Receptionist = () => {
         setFilteredPatients([]);
     };
 
+    const isToday = (dateString) => {
+        if (!dateString) return false;
+        const today = new Date();
+        const date = new Date(dateString);
+        return (
+            date.getFullYear() === today.getFullYear() &&
+            date.getMonth() === today.getMonth() &&
+            date.getDate() === today.getDate()
+        );
+    };
+
+    const handleAddVisit = async (patientId) => {
+        try {
+            setLoading(true);
+            const result = await PatientService.addVisit(patientId, employeeId);
+            console.log('Add visit result:', result);
+            if (result === true || result === "true" || result === 1 || result?.value === true) {
+                setError('');
+                setSuccessMessage('Visit added successfully!');
+                setTimeout(() => setSuccessMessage(''), 3000);
+                await fetchPatients(); // Refresh the list
+            } else {
+                setError('Failed to add visit. Please try again.');
+            }
+        } catch (err) {
+            console.error('Error in handleAddVisit:', err);
+            setError('Failed to add visit. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const renderPatientList = () => {
+        const patientsToRender = filteredPatients.length > 0 ? filteredPatients : patients;
+        
+        return (
+            <div className="patient-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {patientsToRender.map(patient => (
+                            <tr key={patient.patientId}>
+                                <td>****{patient.patientId.slice(-4)}</td>
+                                <td>{[patient.firstName, patient.fatherName, patient.grandfatherName, patient.familyName].filter(Boolean).join(' ')}</td>
+                                <td>{patient.phoneNumber}</td>
+                                <td>{formatDate(patient.registrationDate)}</td>
+                                <td>
+                                    <button 
+                                        className="action-button assign"
+                                        onClick={() => handleAssignClick(patient)}
+                                    >
+                                        Assign Doctor
+                                    </button>
+                                    <button 
+                                        className="action-button visit"
+                                        onClick={() => handleAddVisit(patient.patientId)}
+                                        disabled={isToday(patient.registrationDate)}
+                                    >
+                                        Add Visit
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
+
     return (
         <div className="receptionist-container">
             <h1>Patient Management</h1>
-            
+            {successMessage && <div className="success-message">{successMessage}</div>}
             {error && <div className="error-message">{error}</div>}
             
             <div className="tabs">
@@ -357,73 +447,7 @@ const Receptionist = () => {
                     </div>
                     {loading ? (
                         <p>Loading patients...</p>
-                    ) : (filteredPatients.length > 0 ? (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Phone Number</th>
-                                    <th>Registration Date</th>
-                                    <th>ID</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredPatients.map(patient => (
-                                    <tr key={patient.patientId}>
-                                        <td>{patient.firstName}</td>
-                                        <td>{patient.familyName}</td>
-                                        <td>{patient.phoneNumber}</td>
-                                        <td>{formatDate(patient.registrationDate)}</td>
-                                        <td>{patient.patientId}</td>
-                                        <td>
-                                            <button 
-                                                className="assign-button"
-                                                onClick={() => handleAssignClick(patient)}
-                                                disabled={assignedPatients.includes(patient.patientId)}
-                                            >
-                                                {assignedPatients.includes(patient.patientId) ? 'Assigned' : 'Assign to Doctor'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Phone Number</th>
-                                    <th>Registration Date</th>
-                                    <th>ID</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {patients.map(patient => (
-                                    <tr key={patient.patientId}>
-                                        <td>{patient.firstName}</td>
-                                        <td>{patient.familyName}</td>
-                                        <td>{patient.phoneNumber}</td>
-                                        <td>{formatDate(patient.registrationDate)}</td>
-                                        <td>{patient.patientId}</td>
-                                        <td>
-                                            <button 
-                                                className="assign-button"
-                                                onClick={() => handleAssignClick(patient)}
-                                                disabled={assignedPatients.includes(patient.patientId)}
-                                            >
-                                                {assignedPatients.includes(patient.patientId) ? 'Assigned' : 'Assign to Doctor'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ))}
+                    ) : (renderPatientList())}
                 </div>
             )}
 

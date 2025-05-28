@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
+import AuthService from '../services/AuthService';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
+    role: 'DOC' // Default role
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,45 +24,22 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
     try {
-      // Create a Doctor object as expected by the backend
-      const doctorData = {
-        username: formData.username,
-        password: formData.password
-      };
-
-      const response = await fetch('http://localhost:8080/doctors/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(doctorData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const isAuthenticated = await response.json();
-      
-      if (isAuthenticated) {
-        // Store authentication state
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('username', formData.username);
-        
-        // Redirect to receptionist page
-        console.log(response);
-        console.log("User logged in successfully");
-        navigate('/receptionist');
-      } else {
-        setError('Invalid username or password');
+      setIsLoading(true);
+      const response = await AuthService.login(formData.username, formData.password, formData.role);
+      if (response.accessToken) {
+        // Redirect based on role
+        if (formData.role === 'DOC') {
+          navigate('/doctor-dashboard');
+        } else if (formData.role === 'EMP') {
+          navigate('/receptionist');
+        } else {
+          navigate('/home');
+        }
       }
     } catch (err) {
-      setError('Error connecting to server. Please try again.');
       console.error('Login error:', err);
+      setError('Invalid username or password');
     } finally {
       setIsLoading(false);
     }
@@ -81,6 +60,7 @@ const Login = () => {
               onChange={handleChange}
               required
               placeholder=" "
+              autoComplete="username"
             />
             <label htmlFor="username">Username</label>
           </div>
@@ -94,6 +74,7 @@ const Login = () => {
               onChange={handleChange}
               required
               placeholder=" "
+              autoComplete="current-password"
             />
             <label htmlFor="password">Password</label>
             <button
@@ -103,6 +84,29 @@ const Login = () => {
             >
               {showPassword ? "👁️" : "👁️‍🗨️"}
             </button>
+          </div>
+
+          <div className="role-selection">
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="DOC"
+                checked={formData.role === 'DOC'}
+                onChange={handleChange}
+              />
+              Doctor
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="EMP"
+                checked={formData.role === 'EMP'}
+                onChange={handleChange}
+              />
+              Employee
+            </label>
           </div>
 
           <div className="forgot-password">

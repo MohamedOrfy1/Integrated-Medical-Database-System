@@ -42,6 +42,9 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     // Find active doctors (if you add an 'active' field later)
     // List<Doctor> findByActiveTrue();
 
+    @Query("SELECT d FROM Doctor d WHERE d.username = :username AND d.password = :password")
+    Optional<Doctor> findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+
     // Count doctors by department
     @Query("SELECT COUNT(d) FROM Doctor d WHERE d.dept.deptId = :deptId")
     long countByDeptId(@Param("deptId") String deptId);

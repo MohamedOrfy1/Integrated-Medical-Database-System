@@ -4,8 +4,14 @@ export const PatientService = {
     // Get all patients
     getAllPatients: async () => {
         try {
+            const token = localStorage.getItem('token');
             console.log('Making GET request to:', `${API_URL}/getPatients`);
-            const response = await fetch(`${API_URL}/getPatients`);
+            const response = await fetch(`${API_URL}/getPatients`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             console.log('GET response status:', response.status);
             
             if (!response.ok) {
@@ -25,12 +31,14 @@ export const PatientService = {
     // Add a new patient
     addPatient: async (patientData) => {
         try {
+            const token = localStorage.getItem('token');
             console.log('Making POST request to:', `${API_URL}/add`);
             console.log('Request body:', patientData);
             
             const response = await fetch(`${API_URL}/add`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: patientData,
@@ -55,7 +63,13 @@ export const PatientService = {
     },
 
     async checkPatientVisit(date) {
-        const response = await fetch(`http://localhost:8080/patients/checkVisit/${date}`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:8080/patients/checkVisit/${date}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
         if (!response.ok) {
             throw new Error('Failed to check patient visit');
         }
@@ -63,15 +77,38 @@ export const PatientService = {
     },
 
     async checkPatientVisitByDate(date) {
+        const token = localStorage.getItem('token');
         const response = await fetch('http://localhost:8080/employee/getPatDate', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ Date: date }),
         });
         if (!response.ok) {
             throw new Error('Failed to check patient visit');
+        }
+        return await response.json();
+    },
+
+    async addVisit(patientId, employeeId) {
+        console.log(patientId, employeeId);
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/employee/visit', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                PatientId: patientId,
+                EmployeeId: employeeId
+            }),
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to add visit');
         }
         return await response.json();
     }
