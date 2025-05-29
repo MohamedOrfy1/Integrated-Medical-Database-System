@@ -11,6 +11,7 @@ import Hematology from './pages/Hematology';
 import Unauthorized from './pages/Unauthorized';
 import ProtectedRoute from './components/ProtectedRoute';
 import DoctorDashboard from './pages/DoctorDashboard';
+import Research from './pages/Research';
 import './App.css';
 
 // Route change logger component
@@ -74,14 +75,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
+            {/* <Route
               path="/receptionist"
               element={
                 <ProtectedRoute allowedRoles={['EMP']}>
                   <Receptionist />
                 </ProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="/doctor-dashboard"
               element={
@@ -93,7 +94,10 @@ function App() {
 
             {/* Redirect root to login */}
             <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="*" element={<Navigate to="/unauthorized" replace />} />
+            {/* <Route path="*" element={<Navigate to="/unauthorized" replace />} /> */}
+            <Route path='/research' element={ <Research />} />
+            <Route path='/receptionist' element={ <Receptionist />} />
+
           </Routes>
         </main>
       </div>
