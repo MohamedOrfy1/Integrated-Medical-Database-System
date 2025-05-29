@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Pie, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 import '../styles/Research.css';
 
 const Research = () => {
@@ -8,7 +11,14 @@ const Research = () => {
     const [diagnosisfilter, setDiagnosisfilter] = useState('');
     const [agefilter, setAgefilter] = useState('');
 
-    
+    const [activeTab, setActiveTab] = useState('list');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [error, setError] = useState('');
+
+    // For statistics
+    const [stats, setStats] = useState({ total: 0, byDiagnosis: {} ,byAgeRange: {} });
+
+ 
 
     const ageRanges = [
     { label: '1-10', min: 1, max: 10 },
@@ -56,14 +66,31 @@ const Research = () => {
         {firstName: 'Mary', age: 32, diagnosis: 'Diagnosis 4'},
         {firstName: 'Alice', age: 29, diagnosis: 'Diagnosis 2'},
         {firstName: 'Bob', age: 50, diagnosis: 'Diagnosis 3'},
+        {firstName: 'Charlie', age: 22, diagnosis: 'Diagnosis 5'},
+        {firstName: 'David', age: 65, diagnosis: 'Diagnosis 6'},
+        {firstName: 'Eve', age: 18, diagnosis: 'Diagnosis 1'},
+        {firstName: 'Frank', age: 40, diagnosis: 'Diagnosis 6'},
+        {firstName: 'Grace', age: 55, diagnosis: 'Diagnosis 3'},
+        {firstName: 'Hannah', age: 30, diagnosis: 'Diagnosis 4'},
+        {firstName: 'Ian', age: 15, diagnosis: 'Diagnosis 6'},
+        {firstName: 'Jack', age: 70, diagnosis: 'Diagnosis 6'},
+        {firstName: 'Kathy', age: 25, diagnosis: 'Diagnosis 1'},
+        {firstName: 'Leo', age: 38, diagnosis: 'Diagnosis 2'},
+        {firstName: 'Mia', age: 20, diagnosis: 'Diagnosis 5'},
+        {firstName: 'Nina', age: 48, diagnosis: 'Diagnosis 3'},
+        {firstName: 'Oscar', age: 60, diagnosis: 'Diagnosis 4'},
+        {firstName: 'Paul', age: 22, diagnosis: 'Diagnosis 5'},
+        {firstName: 'Quinn', age: 65, diagnosis: 'Diagnosis 6'},
+        {firstName: 'Rita', age: 18, diagnosis: 'Diagnosis 1'},
+        {firstName: 'Sam', age: 40, diagnosis: 'Diagnosis 6'},
+        {firstName: 'Tina', age: 55, diagnosis: 'Diagnosis 3'},
     ];
     setPatients(examples);
     setFilterPatient(examples);
     }, []);
 
-    const uniqueDiagnoses = Array.from(new Set(patients.map(p => p.diagnosis)));
 
-    const uniqueAges = Array.from(new Set(patients.map(p => p.age))).sort((a, b) => a - b);
+
 
 
     // const handleDiagnosisChange = (e) => {
@@ -92,6 +119,26 @@ const Research = () => {
             }
         }
 
+        const total = result.length;
+        const byDiagnosis = {};
+        result.forEach(p => {
+            if (byDiagnosis[p.diagnosis]) {
+            byDiagnosis[p.diagnosis]++;
+            } else {
+            byDiagnosis[p.diagnosis] = 1;
+            }
+        });
+
+        const byAgeRange = {};
+        ageRanges.forEach(r => {
+        byAgeRange[r.label] = 0;
+        });
+        result.forEach(p => {
+        const match = ageRanges.find(r => p.age >= r.min && p.age <= r.max);
+        if (match) byAgeRange[match.label]++;
+        });
+
+        setStats({ total, byDiagnosis, byAgeRange });
         setFilterPatient(result);
     };
     
@@ -104,7 +151,17 @@ const Research = () => {
     return (
     <div className="research-container">
             <h1>Research Patients</h1>
-            <h2>List of patients available for research purposes.</h2>
+            <h2>Patients available for research purposes.</h2>
+            
+            {successMessage && <div className="success-message">{successMessage}</div>}
+            {error && <div className="error-message">{error}</div>}
+            
+
+            <div className="research-tabs">
+                <button className={`research-tab ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>List</button>
+                <button className={`research-tab ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => setActiveTab('stats')}>Statistics</button>
+            </div>
+
             <form onSubmit={e => e.preventDefault()}>
                 <select value={diagnosisfilter} className= 'research-select-diagnosis' onChange={(e) => setDiagnosisfilter(e.target.value)}>
                 <option value="" disabled hidden>Filter By Diagnosis</option>
@@ -122,6 +179,7 @@ const Research = () => {
                 <button className='research-apply' onClick={applyFilters}>Apply Filters</button>
                 <button className='research-clear' onClick={handleClearFilters}>Clear Filters</button>
             </form>
+            {activeTab === 'list'? (
             <div className="research-list">
                 {filterPatient.length === 0 ? (
                     <h2>No patients available</h2>
@@ -146,6 +204,82 @@ const Research = () => {
                 </table>
                 )}
             </div>
+            ) : (
+            <div className="research-stats">
+                {/* We'll add actual stats content later */}
+                {/* <h2>Total patients: {stats.total}</h2>
+                {Object.keys(stats.byDiagnosis).map((diag, i) => (
+                <h2 key={i}>{diag}: {stats.byDiagnosis[diag]}</h2>
+                ))} */}
+                <div className='stats-container'>
+                <div className='research-total'>
+                    <h2>{diagnosisfilter}</h2>
+                    <h2>{agefilter}</h2>
+                    <h2>Total Patients: {stats.total}</h2>                    
+                </div>
+                <div className='research-charts'>
+                <Pie
+                    data={{
+                        labels: Object.keys(stats.byDiagnosis),
+                        datasets: [{
+                            data: Object.values(stats.byDiagnosis),
+                            backgroundColor: [
+                                '#FF6384',
+                                '#36A2EB',
+                                '#FFCE56',
+                                '#4BC0C0',
+                                '#9966FF',
+                                '#FF9F40'
+                            ],
+                        }],
+                    }}
+                    options={{
+                        responsive: true,
+                        plugins: {
+                            // legend: {
+                            //     position: 'top',
+                            // },
+                            title: {
+                                display: true,
+                                text: 'Patients by Diagnosis'
+                            }
+                        }
+                    }}
+
+                />
+                </div>
+
+                <div className='research-charts'>
+                <Bar
+                    data={{
+                        labels: Object.keys(stats.byAgeRange),
+                        datasets: [{
+                        label: 'Number of Patients',
+                        data: Object.values(stats.byAgeRange),
+                        backgroundColor: '#36A2EB'
+                        }]
+                    }}
+                    options={{
+                        responsive: true,
+                        plugins: {
+                        title: {
+                            display: true,
+                            text: 'Patients per Age Range'
+                        }
+                        },
+                        scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                        }
+                    }}
+                    />
+                    </div>
+
+                    </div>
+
+            </div>
+            )}
     </div>
     );
 

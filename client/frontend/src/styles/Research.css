@@ -160,6 +160,92 @@ body {
 }
 
 
+.research-tabs {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #4b6a8ab0;
+}
+
+.research-tab {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    /* border-bottom: 2px solid transparent; */
+    margin-right: 16px;
+    cursor: pointer;
+    color: #4b6b8a;
+    transition: all 0.3s ease;
+}
+
+.research-tab:hover {
+    color: #6e8ead;
+}
+
+.research-tab.active {
+    color: #4b6b8a;
+    font-size: 20px;
+    /* border-bottom: 2px solid #4b6b8a; */
+}
+
+
+.research-stats{
+    /* background: white; */
+    /* background-color: transparent; */
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    background-color: transparent;
+    margin-top: 30px;
+}
+
+
+.research-total{
+    /* flex: 1 1 45%; */
+    background: white;
+    /* background-color: transparent; */
+    /* padding: 24px; */
+    padding-top: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  /* box-sizing: border-box; */
+
+}
+
+.research-total h2 {
+    color: #4b6b8a;
+    font-size: 24px;
+    margin-bottom: 10px;
+    margin-right: 40px;
+}
+
+.research-charts{
+    flex: 1 1 45%;
+    background: white;
+    /* background-color: transparent; */
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    min-width: 300px;
+    max-width: 600px;
+}
+
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .tab-button {
@@ -176,3 +262,5 @@ body {
         font-size: 14px;
     }
 }
+
+
