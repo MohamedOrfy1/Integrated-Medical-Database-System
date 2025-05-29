@@ -101,7 +101,7 @@ public class DoctorController {
             return null;
         }
     }
-
+//-----------------------------------------------
     /*@PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getReportTest")
     public ResponseEntity<String> getReportTest(@RequestBody String TestId) {
@@ -115,14 +115,27 @@ public class DoctorController {
             return null;
         }
     }*/
+    //-----------------------------------------------
 
-    /*@PreAuthorize("hasAuthority('DOC')")
+    @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatient")
-    public String getPatient() {
-        String patientData = null;
+    public ResponseEntity<String> getPatient(@RequestBody String patientid) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                JsonNode rootNode = objectMapper.readTree(patientid);
+                String pid = rootNode.path("PatientID").asText();
+                return null;//doctorService.getPatientDataJson(patientid);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        //String patientData = null;
 
-        return patientData;
-    }*/
+        //return ResponseEntity.ok(patientData);
+    }
+
+
+
 
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getDocPatients")
@@ -150,16 +163,6 @@ public class DoctorController {
     }
 
 
-    @GetMapping("/{id}")
-    public Doctor getDoctorById(@PathVariable Long id) {
-        return doctorService.getDoctorById(id);
-    }
 
-
-
-    @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
-        doctorService.deleteDoctor(id);
-    }
 
 }

@@ -5,6 +5,8 @@ import com.example.demo.service.DoctorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,5 +137,40 @@ public class DoctorServiceImpl implements DoctorService {
             System.out.println(e);
             return null;
         }
+    }
+
+    @Override
+    public String getPatientDataJson(String patientId){
+
+        Patient p = null;
+
+        JsonObject PatientInfo = new JsonObject();
+        PatientInfo.addProperty("first_name", "XX");
+        PatientInfo.addProperty("family_name", "XX");
+        PatientInfo.addProperty("registrationDate", "XX");
+        PatientInfo.addProperty("age", "XX");
+        PatientInfo.addProperty("PatientTestID", "");
+
+
+        List<Integer> testIDs = patientTestRepository.findTestIdsByPatientId(patientId);
+        JsonArray TestIDs = new JsonArray();
+        int n = testIDs.size();
+        for (Integer testID : testIDs) {
+            TestIDs.add(testID);
+        }
+        PatientInfo.add("TestIDs", TestIDs);
+
+
+        JsonArray Diagnosis = new JsonArray();
+        for (int i = 0 ; i<n;i++){
+            JsonObject diagnose = new JsonObject();
+            diagnose.addProperty("DiagnosisDate", "XX");
+            diagnose.addProperty("Diagnosis", "XX");
+            Diagnosis.add(diagnose);
+        }
+        PatientInfo.add("Diagnosis", Diagnosis);
+
+
+        return null;
     }
 }

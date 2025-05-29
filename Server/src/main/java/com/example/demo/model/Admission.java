@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import com.example.demo.model.*;
 import lombok.Getter;
 import lombok.Setter;
 
