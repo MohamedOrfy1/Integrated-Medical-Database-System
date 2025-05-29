@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import About from './pages/About';
 import Department from './pages/Department';
@@ -39,7 +38,6 @@ function App() {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
             {/* Protected routes */}
