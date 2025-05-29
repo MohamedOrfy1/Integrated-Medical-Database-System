@@ -56,19 +56,16 @@ public class CommonServiceImpl implements CommonService {
             throw new IllegalArgumentException("ID must be exactly 14 numeric characters");
         }
 
-        String centuryDigit = id.substring(0, 1);  // x (determines century)
-        String yy = id.substring(1, 3);            // yy (last two digits of year)
-        String mm = id.substring(3, 5);            // mm (month)
-        String dd = id.substring(5, 7);            // dd (day)
+        String centuryDigit = id.substring(0, 1);
+        String yy = id.substring(1, 3);
+        String mm = id.substring(3, 5);
+        String dd = id.substring(5, 7);
 
-        // Determine full year based on century digit
-        int century;
-        switch (centuryDigit) {
-            case "2": century = 1900; break;  // 1900-1999
-            case "3": century = 2000; break;  // 2000-2099
-            default:
-                throw new IllegalArgumentException("Invalid century digit in ID");
-        }
+        int century = switch (centuryDigit) {
+            case "2" -> 1900;
+            case "3" -> 2000;
+            default -> throw new IllegalArgumentException("Invalid century digit in ID");
+        };
 
         int year = century + Integer.parseInt(yy);
         int month = Integer.parseInt(mm);

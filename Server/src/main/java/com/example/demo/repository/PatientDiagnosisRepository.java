@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import com.example.demo.DTO.DiagnosisDTO;
 import com.example.demo.model.Patient;
 import com.example.demo.model.PatientDiagnosis;
 import com.example.demo.model.PatientDiagnosisId;
@@ -51,4 +52,15 @@ public interface PatientDiagnosisRepository extends JpaRepository<PatientDiagnos
             "JOIN FETCH pd.diagnosis " +
             "WHERE pd.diagnosis.diagnosisCode = :diagnosisCode")
     List<PatientDiagnosis> findFullDiagnosisInfoByCode(@Param("diagnosisCode") String diagnosisCode);
+
+
+        @Query("SELECT NEW com.example.demo.DTO.DiagnosisDTO(" +
+                "doc.name, d.diagnosisName, pd.id.diagnosisDate) " +
+                "FROM PatientDiagnosis pd " +
+                "JOIN pd.diagnosis d " +
+                "JOIN pd.doctor doc " +
+                "WHERE pd.id.patientId = :patientId " +
+                "ORDER BY pd.id.diagnosisDate DESC")
+        List<DiagnosisDTO> findDiagnosisDetailsByPatientId(@Param("patientId") String patientId);
+
 }

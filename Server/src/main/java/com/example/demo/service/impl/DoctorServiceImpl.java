@@ -1,10 +1,12 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.DTO.DiagnosisDTO;
 import com.example.demo.repository.*;
 import com.example.demo.service.DoctorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -26,15 +28,19 @@ public class DoctorServiceImpl implements DoctorService {
     private final PatientDiagnosisRepository patientDiagnosisRepository;
     private final AdmissionRepository admissionRepository;
     private final PatientTestRepository patientTestRepository;
+    private final EmployeeServiceImpl employeeService;
+    private final CommonServiceImpl commonService;
 
     @Autowired
     public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository,
-                             AdmissionRepository admissionRepository,PatientTestRepository patientTestRepository) {
+                             AdmissionRepository admissionRepository,PatientTestRepository patientTestRepository,EmployeeServiceImpl employeeService,CommonServiceImpl commonService) {
         this.doctorRepository = doctorRepository;
         this.diagnosisRepository = diagnosisRepository;
         this.patientDiagnosisRepository = patientDiagnosisRepository;
         this.admissionRepository = admissionRepository;
         this.patientTestRepository = patientTestRepository;
+        this.employeeService = employeeService;
+        this.commonService = commonService;
     }
 
     @Override
@@ -141,15 +147,15 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public String getPatientDataJson(String patientId){
+        System.out.println(patientId);
 
-        Patient p = null;
+        Patient p = employeeService.getPatientByID(patientId);
 
         JsonObject PatientInfo = new JsonObject();
-        PatientInfo.addProperty("first_name", "XX");
-        PatientInfo.addProperty("family_name", "XX");
-        PatientInfo.addProperty("registrationDate", "XX");
-        PatientInfo.addProperty("age", "XX");
-        PatientInfo.addProperty("PatientTestID", "");
+        PatientInfo.addProperty("first_name", p.getFirstName());
+        PatientInfo.addProperty("family_name", p.getFamilyName());
+        PatientInfo.addProperty("registrationDate", p.getRegistrationDate().toString());
+        PatientInfo.addProperty("age", commonService.getAgeFromID(patientId));
 
 
         List<Integer> testIDs = patientTestRepository.findTestIdsByPatientId(patientId);
@@ -162,15 +168,17 @@ public class DoctorServiceImpl implements DoctorService {
 
 
         JsonArray Diagnosis = new JsonArray();
-        for (int i = 0 ; i<n;i++){
+        List <DiagnosisDTO> dtos = patientDiagnosisRepository.findDiagnosisDetailsByPatientId(patientId);
+        for (DiagnosisDTO dto:dtos){
             JsonObject diagnose = new JsonObject();
-            diagnose.addProperty("DiagnosisDate", "XX");
-            diagnose.addProperty("Diagnosis", "XX");
+            diagnose.addProperty("DiagnosisDate", dto.getDiagnosisDate().toString());
+            diagnose.addProperty("Diagnosis", dto.getDiagnosisName());
+            diagnose.addProperty("DiagnosisDoctor", dto.getDoctorName());
             Diagnosis.add(diagnose);
         }
         PatientInfo.add("Diagnosis", Diagnosis);
 
-
-        return null;
+        Gson gson = new Gson();
+        return gson.toJson(PatientInfo);
     }
 }

@@ -124,14 +124,11 @@ public class DoctorController {
             try {
                 JsonNode rootNode = objectMapper.readTree(patientid);
                 String pid = rootNode.path("PatientID").asText();
-                return null;//doctorService.getPatientDataJson(patientid);
+                return ResponseEntity.ok(doctorService.getPatientDataJson(pid));
             } catch (Exception e) {
                 System.out.println(e);
                 return null;
             }
-        //String patientData = null;
-
-        //return ResponseEntity.ok(patientData);
     }
 
 

@@ -16,9 +16,6 @@ import jakarta.persistence.Tuple;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-
-
-
     // Find by patient_id (custom ID)
     Optional<Patient> findByPatientId(String patientId);
 

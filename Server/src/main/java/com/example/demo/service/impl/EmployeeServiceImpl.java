@@ -34,6 +34,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    @Override
+    public Patient getPatientByID(String PatientID){
+        return patientRepository.findByPatientId(PatientID).orElse(null);
+    }
+
 
     @Override
     public boolean registerPatient(String employeeID,String patientID){
