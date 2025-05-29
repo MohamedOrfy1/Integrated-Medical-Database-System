@@ -10,8 +10,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 @Service
 public class JWTServiceImpl implements JWTService {
     Dotenv dotenv = Dotenv.load();
-    private final String secret = dotenv.get("jwt.secret");
-    private final long expirationDuration = Long.parseLong(dotenv.get("jwt.expiration"));
+    private final String secret = dotenv.get("jwt_secret");
+    private final long expirationDuration = Long.parseLong(dotenv.get("jwt_expiration"));
 
     @Override
     public String generateToken(String id, String role) {
