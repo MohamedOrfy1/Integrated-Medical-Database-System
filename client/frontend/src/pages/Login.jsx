@@ -62,7 +62,7 @@ const Login = () => {
               placeholder=" "
               autoComplete="username"
             />
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username" style={{backgroundColor: "transparent" , fontSize: "19px"}}>Username</label>
           </div>
 
           <div className="form-group">
@@ -76,7 +76,7 @@ const Login = () => {
               placeholder=" "
               autoComplete="current-password"
             />
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password" style={{backgroundColor: "transparent" , fontSize: "19px"}}>Password</label>
             <button
               type="button"
               className="password-toggle"
@@ -109,9 +109,9 @@ const Login = () => {
             </label>
           </div>
 
-          <div className="forgot-password">
+          {/* <div className="forgot-password">
             <Link to="/forgot-password">Forgot Password?</Link>
-          </div>
+          </div> */}
 
           <button 
             type="submit" 
@@ -122,9 +122,9 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="signup-link">
+        {/* <div className="signup-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

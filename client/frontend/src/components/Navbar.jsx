@@ -31,7 +31,7 @@ export default function Navbar() {
                     {!token ? (
                         <>
                             <Link to="/login" className="nav-button">Login</Link>
-                            <Link to="/signup" className="nav-button">Sign Up</Link>
+                            {/* <Link to="/signup" className="nav-button">Sign Up</Link> */}
                         </>
                     ) : (
                         <button className="logout-button" onClick={handleLogout}>Logout</button>
