@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DoctorService } from '../services/DoctorService';
-import axios from 'axios';
 import '../styles/DoctorDashboard.css';
 
 const DoctorDashboard = () => {
@@ -33,7 +32,6 @@ const DoctorDashboard = () => {
             setLoading(true);
             setError('');
             const data = await DoctorService.getAssignedPatients();
-            console.log(data);
             setPatients(data);
         } catch (err) {
             console.error('Error fetching patients:', err);
@@ -51,12 +49,7 @@ const DoctorDashboard = () => {
 
     const fetchDiagnosisList = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/doctors/getDiagnosis', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            // console.log(response.data);
-            const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+            const data = await DoctorService.getDiagnosisList();
             setDiagnosisList(data);
         } catch (err) {
             setDiagnosisList([]);
@@ -75,41 +68,33 @@ const DoctorDashboard = () => {
     const handleDiagnosisSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
             const payload = {
                 DiagnosisId: diagnosisData.diagnosisId,
                 DiagnosisDate: diagnosisData.diagnosisDate,
                 PatientId: selectedPatient.patientId
             };
-            const response = await axios.post(
-                'http://localhost:8080/doctors/diagnosePatient',
-                JSON.stringify(payload),
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            if (response.data === true) {
+            
+            const success = await DoctorService.addDiagnosis(payload);
+            
+            if (success) {
                 setSuccessMessage('Diagnosis added successfully!');
                 setShowDiagnosisModal(false);
                 const selectedDiagnosis = diagnosisList.find(
-                  d => d.diagnosisCode === diagnosisData.diagnosisId
+                    d => d.diagnosisCode === diagnosisData.diagnosisId
                 );
                 setPatients(prevPatients =>
-                  prevPatients.map(p =>
-                    p.patientId === selectedPatient.patientId
-                      ? {
-                          ...p,
-                          latestDiagnosis: {
-                            diagnosisId: diagnosisData.diagnosisId,
-                            diagnosisName: selectedDiagnosis ? selectedDiagnosis.diagnosisName : '',
-                            diagnosisDate: diagnosisData.diagnosisDate
-                          }
-                        }
-                      : p
-                  )
+                    prevPatients.map(p =>
+                        p.patientId === selectedPatient.patientId
+                            ? {
+                                ...p,
+                                latestDiagnosis: {
+                                    diagnosisId: diagnosisData.diagnosisId,
+                                    diagnosisName: selectedDiagnosis ? selectedDiagnosis.diagnosisName : '',
+                                    diagnosisDate: diagnosisData.diagnosisDate
+                                }
+                            }
+                            : p
+                    )
                 );
             } else {
                 setError('Failed to add diagnosis. Please try again.');

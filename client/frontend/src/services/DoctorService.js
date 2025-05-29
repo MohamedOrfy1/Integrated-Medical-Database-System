@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080';
+const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -83,14 +83,31 @@ export const DoctorService = {
         }
     },
 
-    addDiagnosis: async (patientId, doctorId, diagnosisData) => {
+    getDiagnosisList: async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${API_URL}/doctors/getDiagnosis`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+            return data;
+        } catch (error) {
+            console.error('Error fetching diagnosis list:', error);
+            throw error;
+        }
+    },
+
+    addDiagnosis: async (diagnosisData) => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                `${API_URL}/doctors/${doctorId}/patients/${patientId}/diagnosis`,
-                diagnosisData,
+                `${API_URL}/doctors/diagnosePatient`,
+                JSON.stringify(diagnosisData),
                 {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
                 }
             );
             return response.data;
