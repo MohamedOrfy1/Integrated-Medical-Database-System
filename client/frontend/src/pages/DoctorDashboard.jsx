@@ -16,7 +16,6 @@ const DoctorDashboard = () => {
     });
     const [diagnosisList, setDiagnosisList] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
-    const [filterDiagnosis, setFilterDiagnosis] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,6 +33,7 @@ const DoctorDashboard = () => {
             setLoading(true);
             setError('');
             const data = await DoctorService.getAssignedPatients();
+            console.log(data);
             setPatients(data);
         } catch (err) {
             console.error('Error fetching patients:', err);
@@ -55,6 +55,7 @@ const DoctorDashboard = () => {
             const response = await axios.get('http://localhost:8080/doctors/getDiagnosis', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            // console.log(response.data);
             const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
             setDiagnosisList(data);
         } catch (err) {
@@ -126,27 +127,6 @@ const DoctorDashboard = () => {
         }));
     };
 
-    const handleFilterByDiagnosis = async (diagnosisId) => {
-        try {
-            const token = localStorage.getItem('token');
-            const payload = JSON.stringify({ DiagnosisId: diagnosisId });
-            const response = await axios.post(
-                'http://localhost:8080/doctors/getPatDiagnosis',
-                payload,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-            setPatients(data);
-        } catch (err) {
-            setError('Failed to filter patients by diagnosis.');
-        }
-    };
-
     if (loading) {
         return <div className="loading">Loading patients...</div>;
     }
@@ -164,36 +144,6 @@ const DoctorDashboard = () => {
                     <button onClick={() => setSuccessMessage('')}>×</button>
                 </div>
             )}
-            <div className="filter-bar" style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <select
-                    value={filterDiagnosis}
-                    onChange={async (e) => {
-                        const code = e.target.value;
-                        setFilterDiagnosis(code);
-                        if (code) {
-                            await handleFilterByDiagnosis(code);
-                        } else {
-                            fetchPatients();
-                        }
-                    }}
-                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1.5px solid #e0e0e0', fontSize: '1rem' }}
-                >
-                    <option value="">All Diagnoses</option>
-                    {diagnosisList.map((diag) => (
-                        <option key={diag.diagnosisCode} value={diag.diagnosisCode}>
-                            {diag.diagnosisName}
-                        </option>
-                    ))}
-                </select>
-                {filterDiagnosis && (
-                    <button
-                        onClick={() => { setFilterDiagnosis(''); fetchPatients(); }}
-                        style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', background: '#f44336', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
-                    >
-                        Clear Filter
-                    </button>
-                )}
-            </div>
             <div className="patients-list">
                 <h2>Your Patients</h2>
                 {patients.length === 0 ? (

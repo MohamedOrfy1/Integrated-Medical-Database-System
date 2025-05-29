@@ -25,8 +25,10 @@ class AuthService {
                 password
             }, {
                 headers: {
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                withCredentials: true
             });
 
             if (response.data === "false") {
@@ -41,6 +43,7 @@ class AuthService {
                 role: role
             };
         } catch (error) {
+            console.error('Login error:', error);
             throw error;
         }
     }
@@ -56,6 +59,12 @@ class AuthService {
             email,
             password,
             role
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            withCredentials: true
         });
     }
 
