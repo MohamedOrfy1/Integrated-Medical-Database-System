@@ -211,7 +211,7 @@ const DoctorDashboard = () => {
                                     </button>
                                     <button
                                         style={{ marginLeft: "8px" }}
-                                        onClick={() =>{ setPatientId(patient.patientId)
+                                        onClick={() =>{ setPatientId(patient.patientId);
                                             navigate(`/patient`)}}
                                         > View Details
                                     </button>
