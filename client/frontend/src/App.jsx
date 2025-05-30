@@ -13,6 +13,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import Research from './pages/Research';
 import './App.css';
 import Patient from './pages/Patient';
+import { PatientContext } from './Context/PatientContext';
 
 // Route change logger component
 const RouteLogger = () => {
@@ -31,7 +32,8 @@ const RouteLogger = () => {
 
 function App() {
   return (
-    <Router>
+   <PatientContext>
+   <Router>
       <div className="app">
         <Navbar />
         <RouteLogger />
@@ -109,6 +111,7 @@ function App() {
         </main>
       </div>
     </Router>
+    </PatientContext>
   );
 }
 

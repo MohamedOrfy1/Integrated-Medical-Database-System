@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { PatientContext } from "../Context/PatientContext";
+
 export default function PatientCard(){
     const[patient,setPatient]=useState(null);
+    let{patientId}=useContext(PatientContext)
     function getPatientInfo(){
-        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/${id}`)
+        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/${patientId}`)
         .then((response)=>{
             console.log(response)
         })

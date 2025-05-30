@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DoctorService } from '../services/DoctorService';
 import '../styles/DoctorDashboard.css';
+import { PatientContext } from '../Context/PatientContext';
+
 
 const DoctorDashboard = () => {
+    let{setPatientId}=useContext(PatientContext);
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -208,9 +211,9 @@ const DoctorDashboard = () => {
                                     </button>
                                     <button
                                         style={{ marginLeft: "8px" }}
-                                        onClick={() => navigate(`/patient/${patient.patientId}`)}
-                                    >
-                                        View Details
+                                        onClick={() =>{ setPatientId(patient.patientId)
+                                            navigate(`/patient`)}}
+                                        > View Details
                                     </button>
                                     </td>   
                                 </tr>
