@@ -208,7 +208,7 @@ const DoctorDashboard = () => {
                                     </button>
                                     <button
                                         style={{ marginLeft: "8px" }}
-                                        onClick={() => navigate(`/patient/${patient.patientId}`)}
+                                        onClick={() => navigate(`/patient`)}
                                     >
                                         View Details
                                     </button>
