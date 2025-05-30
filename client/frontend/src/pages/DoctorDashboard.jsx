@@ -203,10 +203,16 @@ const DoctorDashboard = () => {
                                             : '—'}
                                     </td>
                                     <td>
-                                        <button onClick={() => handleAddDiagnosis(patient)}>
-                                            Add Diagnosis
-                                        </button>
-                                    </td>
+                                    <button onClick={() => handleAddDiagnosis(patient)}>
+                                        Add Diagnosis
+                                    </button>
+                                    <button
+                                        style={{ marginLeft: "8px" }}
+                                        onClick={() => navigate(`/patient/${patient.patientId}`)}
+                                    >
+                                        View Details
+                                    </button>
+                                    </td>   
                                 </tr>
                             ))}
                         </tbody>

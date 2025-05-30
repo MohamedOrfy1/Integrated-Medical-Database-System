@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DoctorDashboard from './pages/DoctorDashboard';
 import Research from './pages/Research';
 import './App.css';
+import Patient from './pages/Patient';
 
 // Route change logger component
 const RouteLogger = () => {
@@ -86,6 +87,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['DOC']}>
                   <DoctorDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient"
+              element={
+                <ProtectedRoute allowedRoles={['DOC']}>
+                  <Patient/>
                 </ProtectedRoute>
               }
             />
