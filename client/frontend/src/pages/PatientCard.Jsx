@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 export default function PatientCard(){
-//     const[patient,setPatient]=useState(null);
-//     function getPatientInfo(){
-//         axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/${id}`)
-//         .then((response)=>{
-//             console.log(response)
-//         })
-//         .catch(()=>{
+    const[patient,setPatient]=useState(null);
+    function getPatientInfo(){
+        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/${id}`)
+        .then((response)=>{
+            console.log(response)
+        })
+        .catch(()=>{
 
-//         })
-//     }
-//     useEffect(()=>{
-//         getPatientInfo()
-//     },[])
+        })
+    }
+    useEffect(()=>{
+        getPatientInfo()
+    },[])
 
-//   return <>
-//       <div className="bg-white rounded-2xl p-6 max-w-xl mx-auto shadow text-gray-900 space-y-6">
-//       <div className="text-xl font-bold">{patient?.first_name} {patient?.family_name}</div>
+  return <>
+      <div className="bg-white rounded-2xl p-6 max-w-xl mx-auto shadow text-gray-900 space-y-6">
+      <div className="text-xl font-bold">{patient?.first_name} {patient?.family_name}</div>
 
-//       <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
-//         <div>
-//           <p className="text-gray-500">Registration Date</p>
-//           <p>{patient?.registrationDate}</p>
-//         </div>
-//         <div>
-//           <p className="text-gray-500">Age</p>
-//           <p>{patient?.age}</p>
-//         </div>
-//       </div>
-//   </div>
-//   </>
+      <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+        <div>
+          <p className="text-gray-500">Registration Date</p>
+          <p>{patient?.registrationDate}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">Age</p>
+          <p>{patient?.age}</p>
+        </div>
+      </div>
+  </div>
+  </>
 //   (
 //     <div className="bg-white rounded-2xl p-6 max-w-xl mx-auto shadow text-gray-900">
 //       {/* Header Section */}
@@ -75,11 +75,7 @@ export default function PatientCard(){
 //       </div>
 //     </div>
 //   );
-return<>
-<div>
-    patient
-</div>
-</>
+
 };
 
 

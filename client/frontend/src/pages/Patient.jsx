@@ -3,7 +3,7 @@ export default function Patient() {
 
   return <>
 
-  {/* <div className="flex flex-col lg:flex-row gap-6 bg-gray-100 p-6">
+  <div className="flex flex-col lg:flex-row gap-6 bg-gray-100 p-6">
     <div className="w-full lg:w-1/2">
       <PatientCard />
     </div>
@@ -11,9 +11,6 @@ export default function Patient() {
     <div className="w-full lg:w-1/2">
       <PatientVisits />
     </div>
-  </div> */}
-  <div>
-    patient
   </div>
     </>
   
