@@ -5,11 +5,11 @@ export default function Patient() {
 
   <div className="flex flex-col lg:flex-row gap-6 bg-gray-100 p-6">
     <div className="w-full lg:w-1/2">
-      <PatientCard />
+      <PatientCard/>
     </div>
     
     <div className="w-full lg:w-1/2">
-      <PatientVisits />
+      <PatientVisits/>
     </div>
   </div>
     </>

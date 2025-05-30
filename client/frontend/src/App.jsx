@@ -97,7 +97,7 @@ function App() {
               path="/patient"
               element={
                 <ProtectedRoute allowedRoles={['DOC']}>
-                  <PatientCard/>
+                  <PatientCard />
                 </ProtectedRoute>
               }
             />
