@@ -6,7 +6,7 @@ export default function PatientCard(){
     const[patient,setPatient]=useState(null);
     let{patientId}=useContext(PatientContext)
     function getPatientInfo(){
-        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app//getPatient`,{
+        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/getPatient`,{
             "PatientID": patientId
         })
         .then((response)=>{

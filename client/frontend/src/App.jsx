@@ -14,7 +14,6 @@ import Research from './pages/Research';
 import './App.css';
 import Patient from './pages/Patient';
 import { PatientContext } from './Context/PatientContext';
-import PatientCard from './pages/PatientCard.Jsx';
 
 // Route change logger component
 const RouteLogger = () => {
@@ -97,7 +96,7 @@ function App() {
               path="/patient"
               element={
                 <ProtectedRoute allowedRoles={['DOC']}>
-                  <PatientCard />
+                  <Patient/>
                 </ProtectedRoute>
               }
             />
