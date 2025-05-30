@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Diagnosis;
 import com.example.demo.service.CommonService;
 import com.example.demo.service.DoctorService;
 import com.example.demo.service.impl.JWTServiceImpl;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
+@CrossOrigin(origins = "https://imbdc.vercel.app", allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
 public class DoctorController {
@@ -156,6 +157,33 @@ public class DoctorController {
         } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.ok(false);
+        }
+    }
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/addDiagnosis")
+    public ResponseEntity<String> addDiagnosis(@RequestBody Diagnosis diagnosis) {
+        try {
+            if (doctorService.addDiagnosis(diagnosis.getDiagnosisCode(), diagnosis.getDiagnosisName())) {
+                return ResponseEntity.ok("Diagnosis added successfully");
+            } else {
+                return ResponseEntity.badRequest().body("Diagnosis code already exists or invalid data");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error adding diagnosis");
+        }
+    }
+    @PreAuthorize("hasAuthority('DOC')")
+    @DeleteMapping("/diagnoses/{diagnosisCode}")
+    public ResponseEntity<Boolean> deleteDiagnosis(@PathVariable String diagnosisCode) {
+        try {
+            boolean deleted = doctorService.deleteDiagnosis(diagnosisCode);
+            return deleted
+                    ? ResponseEntity.ok(true)
+                    : ResponseEntity.ok(false);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.ok(false);
+
         }
     }
 

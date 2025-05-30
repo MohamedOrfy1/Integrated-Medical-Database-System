@@ -181,4 +181,37 @@ public class DoctorServiceImpl implements DoctorService {
         Gson gson = new Gson();
         return gson.toJson(PatientInfo);
     }
+    @Override
+    public boolean addDiagnosis(String diagnosisCode, String diagnosisName) {
+        // Check if diagnosis code already exists
+        if (diagnosisRepository.existsByDiagnosisCode(diagnosisCode)) {
+            return false;
+        }
+        // Create and save new diagnosis
+        Diagnosis newDiagnosis = new Diagnosis();
+        newDiagnosis.setDiagnosisCode(diagnosisCode);
+        newDiagnosis.setDiagnosisName(diagnosisName);
+        diagnosisRepository.save(newDiagnosis);
+        return true;
+    }
+
+    @Override
+    public boolean deleteDiagnosis(String diagnosisCode) {
+        try {
+            // Check if diagnosis exists first
+            if (!diagnosisRepository.existsById(diagnosisCode)) {
+                return false;
+            }
+
+            // Check if diagnosis is being used in patient_diagnosis table
+            if (diagnosisRepository.isDiagnosisInUse(diagnosisCode) > 0) {
+                return false;
+            }
+
+            diagnosisRepository.deleteById(diagnosisCode);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
