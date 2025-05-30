@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-@CrossOrigin(origins = "https://imbdc.vercel.app", allowedHeaders = "*")
+@CrossOrigin(origins = "https://imbdc.vercel.app/", allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
 public class DoctorController {
