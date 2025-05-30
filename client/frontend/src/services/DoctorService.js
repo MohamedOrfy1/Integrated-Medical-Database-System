@@ -115,5 +115,45 @@ export const DoctorService = {
             console.error('Error adding diagnosis:', error);
             throw error;
         }
+    },
+
+    // New methods for managing diagnoses
+    createDiagnosis: async (diagnosisData) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${API_URL}/doctors/createDiagnosis`,
+                JSON.stringify(diagnosisData),
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error creating diagnosis:', error);
+            throw error;
+        }
+    },
+
+    deleteDiagnosis: async (diagnosisCode) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(
+                `${API_URL}/doctors/deleteDiagnosis/${diagnosisCode}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting diagnosis:', error);
+            throw error;
+        }
     }
 }; 

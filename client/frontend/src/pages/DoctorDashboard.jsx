@@ -8,10 +8,15 @@ const DoctorDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
+    const [showManageDiagnosisModal, setShowManageDiagnosisModal] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [diagnosisData, setDiagnosisData] = useState({
         diagnosisId: '',
         diagnosisDate: '',
+    });
+    const [newDiagnosis, setNewDiagnosis] = useState({
+        diagnosisCode: '',
+        diagnosisName: '',
     });
     const [diagnosisList, setDiagnosisList] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
@@ -112,6 +117,36 @@ const DoctorDashboard = () => {
         }));
     };
 
+    const handleCreateDiagnosis = async (e) => {
+        e.preventDefault();
+        try {
+            await DoctorService.createDiagnosis(newDiagnosis);
+            setSuccessMessage('Diagnosis created successfully!');
+            setNewDiagnosis({ diagnosisCode: '', diagnosisName: '' });
+            fetchDiagnosisList();
+        } catch (err) {
+            setError('Failed to create diagnosis. Please try again.');
+        }
+    };
+
+    const handleDeleteDiagnosis = async (diagnosisCode) => {
+        try {
+            await DoctorService.deleteDiagnosis(diagnosisCode);
+            setSuccessMessage('Diagnosis deleted successfully!');
+            fetchDiagnosisList();
+        } catch (err) {
+            setError('Failed to delete diagnosis. Please try again.');
+        }
+    };
+
+    const handleNewDiagnosisChange = (e) => {
+        const { name, value } = e.target;
+        setNewDiagnosis(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     if (loading) {
         return <div className="loading">Loading patients...</div>;
     }
@@ -129,6 +164,14 @@ const DoctorDashboard = () => {
                     <button onClick={() => setSuccessMessage('')}>×</button>
                 </div>
             )}
+            <div className="dashboard-actions">
+                <button 
+                    className="manage-diagnosis-btn"
+                    onClick={() => setShowManageDiagnosisModal(true)}
+                >
+                    Manage Diagnoses
+                </button>
+            </div>
             <div className="patients-list">
                 <h2>Your Patients</h2>
                 {patients.length === 0 ? (
@@ -216,6 +259,77 @@ const DoctorDashboard = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {showManageDiagnosisModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>Manage Diagnoses</h2>
+                        
+                        <form onSubmit={handleCreateDiagnosis} className="create-diagnosis-form">
+                            <h3>Create New Diagnosis</h3>
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    name="diagnosisCode"
+                                    value={newDiagnosis.diagnosisCode}
+                                    onChange={handleNewDiagnosisChange}
+                                    placeholder="Diagnosis Code"
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    name="diagnosisName"
+                                    value={newDiagnosis.diagnosisName}
+                                    onChange={handleNewDiagnosisChange}
+                                    placeholder="Diagnosis Name"
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="submit-btn">Create Diagnosis</button>
+                        </form>
+
+                        <div className="diagnosis-list">
+                            <h3>Existing Diagnoses</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {diagnosisList.map((diagnosis) => (
+                                        <tr key={diagnosis.diagnosisCode}>
+                                            <td>{diagnosis.diagnosisCode}</td>
+                                            <td>{diagnosis.diagnosisName}</td>
+                                            <td>
+                                                <button
+                                                    className="delete-btn"
+                                                    onClick={() => handleDeleteDiagnosis(diagnosis.diagnosisCode)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="modal-buttons">
+                            <button
+                                className="cancel-btn"
+                                onClick={() => setShowManageDiagnosisModal(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
