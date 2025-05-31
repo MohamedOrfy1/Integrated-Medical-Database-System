@@ -146,9 +146,12 @@ export const DoctorService = {
         }
     },
 
+    // Delete a diagnosis
     deleteDiagnosis: async (diagnosisCode) => {
         try {
             const token = localStorage.getItem('token');
+            console.log('Attempting to delete diagnosis:', diagnosisCode);
+            
             const response = await axios.delete(
                 `${API_URL}/doctors/diagnoses/${diagnosisCode}`,
                 {
@@ -158,9 +161,17 @@ export const DoctorService = {
                     }
                 }
             );
-            return response.data;
+            
+            console.log('Delete response:', response);
+            
+            // The backend returns a boolean in the response body
+            return response.data === true;
         } catch (error) {
-            console.error('Error deleting diagnosis:', error);
+            console.error('Error deleting diagnosis:', error.response || error);
+            // If the error is due to the diagnosis being in use, return false
+            if (error.response?.status === 400) {
+                return false;
+            }
             throw error;
         }
     },

@@ -143,10 +143,11 @@ const DoctorDashboard = () => {
                 setSuccessMessage('Diagnosis deleted successfully!');
                 fetchDiagnosisList();
             } else {
-                setError('Failed to delete diagnosis. Please try again.');
+                setError('Cannot delete diagnosis: It may be in use by existing patient records.');
             }
         } catch (err) {
-            setError('Failed to delete diagnosis. Please try again.');
+            console.error('Delete diagnosis error:', err);
+            setError('Failed to delete diagnosis. Please try again later.');
         }
     };
 
