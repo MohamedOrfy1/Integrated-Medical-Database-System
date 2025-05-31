@@ -36,19 +36,20 @@ export default function PatientInfo() {
 
             // Create the request payload
             const payload = {
-                PatientID: patientId
+                patientId: patientId
             };
 
             console.log('Sending request with payload:', payload);
 
             const response = await axios({
                 method: 'post',
-                url: 'https://religious-tammie-tamim21-353bd377.koyeb.app/getPatient',
+                url: 'https://religious-tammie-tamim21-353bd377.koyeb.app/doctors/getPatient',
                 data: payload,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 validateStatus: function (status) {
                     return status < 500; // Resolve only if the status code is less than 500
