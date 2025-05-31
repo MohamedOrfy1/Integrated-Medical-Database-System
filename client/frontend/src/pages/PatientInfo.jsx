@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import axios from "axios";
 import { PatientContext } from '../Context/PatientContext';
 import { useNavigate } from 'react-router-dom';
+import { DoctorService } from '../services/DoctorService';
 
 export default function PatientInfo() {
     const [patient, setPatient] = useState(null);
@@ -11,7 +11,6 @@ export default function PatientInfo() {
     const navigate = useNavigate();
 
     const getPatientInfo = async () => {
-      console.log("From PatientInfo")
         try {
             setLoading(true);
             setError(null);
@@ -34,71 +33,10 @@ export default function PatientInfo() {
                 return;
             }
 
-            // Create the request payload
-            const payload = {
-                patientId: patientId
-            };
+            const patientData = await DoctorService.getPatient(patientId);
+            console.log('Received patient data:', patientData);
+            setPatient(patientData);
 
-            console.log('Sending request with payload:', payload);
-
-            const response = await axios({
-                method: 'post',
-                url: 'https://religious-tammie-tamim21-353bd377.koyeb.app/doctors/getPatient',
-                data: payload,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                validateStatus: function (status) {
-                    return status < 500; // Resolve only if the status code is less than 500
-                }
-            });
-
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            console.log('Response data:', response.data);
-            console.log('Response data type:', typeof response.data);
-            console.log('Response data stringified:', JSON.stringify(response.data));
-
-            if (response.status === 403) {
-                console.log('Received 403, clearing auth data');
-                localStorage.removeItem('token');
-                localStorage.removeItem('role');
-                navigate('/login');
-                return;
-            }
-
-            if (response.status === 200) {
-                try {
-                    let patientData;
-                    if (typeof response.data === 'string') {
-                        patientData = JSON.parse(response.data);
-                    } else if (response.data === null || response.data === '') {
-                        console.log('Empty response data received');
-                        setError('No patient data available');
-                        return;
-                    } else {
-                        patientData = response.data;
-                    }
-                    
-                    console.log('Parsed patient data:', patientData);
-                    
-                    if (!patientData || Object.keys(patientData).length === 0) {
-                        console.log('Empty patient data object');
-                        setError('No patient data available');
-                        return;
-                    }
-                    
-                    setPatient(patientData);
-                } catch (parseError) {
-                    console.error('Error parsing patient data:', parseError);
-                    setError('Invalid patient data received');
-                }
-            } else {
-                setError('Failed to fetch patient information');
-            }
         } catch (err) {
             console.error('Error details:', {
                 status: err.response?.status,
@@ -113,7 +51,7 @@ export default function PatientInfo() {
                 localStorage.removeItem('role');
                 navigate('/login');
             } else {
-                setError(err.response?.data?.message || 'Failed to fetch patient information');
+                setError(err.message || 'Failed to fetch patient information');
             }
         } finally {
             setLoading(false);

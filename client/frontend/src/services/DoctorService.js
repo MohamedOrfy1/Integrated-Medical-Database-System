@@ -155,5 +155,39 @@ export const DoctorService = {
             console.error('Error deleting diagnosis:', error);
             throw error;
         }
+    },
+
+    getPatient: async (patientId) => {
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Making request to get patient info:', patientId);
+            
+            const response = await axios({
+                method: 'post',
+                url: `${API_URL}/getPatient`,
+                data: { PatientID: patientId },
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response data:', response.data);
+
+            if (response.status === 403) {
+                throw new Error('Access forbidden');
+            }
+
+            if (!response.data) {
+                throw new Error('No data received');
+            }
+
+            return response.data;
+        } catch (error) {
+            console.error('Error in getPatient:', error);
+            throw error;
+        }
     }
 }; 
