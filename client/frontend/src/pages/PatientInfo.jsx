@@ -59,6 +59,8 @@ export default function PatientInfo() {
             console.log('Response status:', response.status);
             console.log('Response headers:', response.headers);
             console.log('Response data:', response.data);
+            console.log('Response data type:', typeof response.data);
+            console.log('Response data stringified:', JSON.stringify(response.data));
 
             if (response.status === 403) {
                 console.log('Received 403, clearing auth data');
@@ -68,17 +70,34 @@ export default function PatientInfo() {
                 return;
             }
 
-            if (response.data) {
+            if (response.status === 200) {
                 try {
-                    const patientData = typeof response.data === 'string' 
-                        ? JSON.parse(response.data) 
-                        : response.data;
+                    let patientData;
+                    if (typeof response.data === 'string') {
+                        patientData = JSON.parse(response.data);
+                    } else if (response.data === null || response.data === '') {
+                        console.log('Empty response data received');
+                        setError('No patient data available');
+                        return;
+                    } else {
+                        patientData = response.data;
+                    }
+                    
                     console.log('Parsed patient data:', patientData);
+                    
+                    if (!patientData || Object.keys(patientData).length === 0) {
+                        console.log('Empty patient data object');
+                        setError('No patient data available');
+                        return;
+                    }
+                    
                     setPatient(patientData);
                 } catch (parseError) {
                     console.error('Error parsing patient data:', parseError);
                     setError('Invalid patient data received');
                 }
+            } else {
+                setError('Failed to fetch patient information');
             }
         } catch (err) {
             console.error('Error details:', {

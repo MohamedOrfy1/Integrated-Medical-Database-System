@@ -15,7 +15,7 @@ export default function PatientVisits() {
   //const[tests,setTests]=useState(null);
     let{patientId}=useContext(PatientContext)
     function fetchTests(){
-        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/getPatient`,{
+        axios.post(`https://religious-tammie-tamim21-353bd377.koyeb.app/doctors/getPatient`,{
             "PatientID": patientId
         })
         .then((response)=>{
