@@ -164,7 +164,7 @@ export const DoctorService = {
             
             const response = await axios({
                 method: 'post',
-                url: `${API_URL}/getPatient`,
+                url: `${API_URL}/doctors/getPatient`,
                 data: { PatientID: patientId },
                 headers: {
                     'Authorization': `Bearer ${token}`,
