@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/employee';
+const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app/employee';
 
 export const HematologyService = {
     generateReport: async (reportData) => {

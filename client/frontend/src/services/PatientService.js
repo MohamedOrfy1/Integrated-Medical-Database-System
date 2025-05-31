@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/patients';
+const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app/patients';
 
 export const PatientService = {
     // Get all patients
@@ -64,7 +64,7 @@ export const PatientService = {
 
     async checkPatientVisit(date) {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8080/patients/checkVisit/${date}`, {
+        const response = await fetch(`${API_URL}/checkVisit/${date}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -78,7 +78,7 @@ export const PatientService = {
 
     async checkPatientVisitByDate(date) {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/employee/getPatDate', {
+        const response = await fetch('https://religious-tammie-tamim21-353bd377.koyeb.app/employee/getPatDate', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -95,7 +95,7 @@ export const PatientService = {
     async addVisit(patientId, employeeId) {
         console.log(patientId, employeeId);
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/employee/visit', {
+        const response = await fetch('https://religious-tammie-tamim21-353bd377.koyeb.app/employee/visit', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
