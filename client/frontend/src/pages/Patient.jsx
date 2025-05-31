@@ -1,5 +1,7 @@
-import PatientCard from "./PatientCard.Jsx"
+import PatientCard from "./PatientCard.jsx"
 import PatientVisits from "./PatientVisits"
+
+PatientVisits
 
 export default function Patient() {
   console.log("hiiiiiiii")
@@ -13,6 +15,6 @@ export default function Patient() {
       <PatientVisits/>
     </div>
   </div>
-    </>
+  </>
 
 }

@@ -13,7 +13,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import Research from './pages/Research';
 import './App.css';
 import Patient from './pages/Patient';
-import { PatientContext } from './Context/PatientContext';
+import PatientInfoProvider from './Context/PatientContext';
 
 // Route change logger component
 const RouteLogger = () => {
@@ -32,7 +32,7 @@ const RouteLogger = () => {
 
 function App() {
   return (
-   <PatientContext>
+   <PatientInfoProvider>
    <Router>
       <div className="app">
         <Navbar />
@@ -95,7 +95,7 @@ function App() {
             <Route
               path="/patient"
               element={
-                <ProtectedRoute allowedRoles={['DOC']}>
+                <ProtectedRoute>
                   <Patient/>
                 </ProtectedRoute>
               }
@@ -111,7 +111,7 @@ function App() {
         </main>
       </div>
     </Router>
-    </PatientContext>
+    </PatientInfoProvider>
   );
 }
 

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from "react";
-import { PatientContext } from "../src/Context/PatientContext";
-
+import { PatientContext } from '../Context/PatientContext';
 export default function PatientVisits() {
   const tests = [
   {

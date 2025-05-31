@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-export let PatientContext=createContext(0);
+export let PatientContext=createContext();
 
 export default function PatientInfoProvider(props){
     const[patientId,setPatientId]=useState(null)
