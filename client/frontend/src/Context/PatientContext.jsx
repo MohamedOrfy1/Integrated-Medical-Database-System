@@ -3,8 +3,10 @@ export let PatientContext=createContext(0);
 
 export default function PatientInfoProvider(props){
     const[patientId,setPatientId]=useState(null)
+    
     return <PatientContext.Provider value={{patientId,setPatientId}}>
       {props.children}
+
     </PatientContext.Provider>
 
 }

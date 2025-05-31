@@ -6,7 +6,7 @@ import { PatientContext } from '../Context/PatientContext';
 
 
 const DoctorDashboard = () => {
-    let{setPatientId}=useContext(PatientContext);
+    let{patientId,setPatientId}=useContext(PatientContext);
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -212,7 +212,9 @@ const DoctorDashboard = () => {
                                     <button
                                         style={{ marginLeft: "8px" }}
                                         onClick={() =>{ setPatientId(patient.patientId);
-                                            navigate(`/patient`)}}
+                                            console.log(patientId)
+                                            navigate(`/patient`);
+                                            }}
                                         > View Details
                                     </button>
                                     </td>   
