@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { PatientContext } from '../Context/PatientContext';
 
-export default function PatientCard(){
+export default function PatientInfo(){
     const patient = {
     first_name: "Cameron",
     family_name: "Williamson",
