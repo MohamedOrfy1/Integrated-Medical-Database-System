@@ -123,10 +123,14 @@ const DoctorDashboard = () => {
     const handleCreateDiagnosis = async (e) => {
         e.preventDefault();
         try {
-            await DoctorService.createDiagnosis(newDiagnosis);
-            setSuccessMessage('Diagnosis created successfully!');
-            setNewDiagnosis({ diagnosisCode: '', diagnosisName: '' });
-            fetchDiagnosisList();
+            const response = await DoctorService.addDiagnosis(newDiagnosis);
+            if (response === "Diagnosis added successfully") {
+                setSuccessMessage('Diagnosis created successfully!');
+                setNewDiagnosis({ diagnosisCode: '', diagnosisName: '' });
+                fetchDiagnosisList();
+            } else {
+                setError(response || 'Failed to create diagnosis. Please try again.');
+            }
         } catch (err) {
             setError('Failed to create diagnosis. Please try again.');
         }
@@ -134,9 +138,13 @@ const DoctorDashboard = () => {
 
     const handleDeleteDiagnosis = async (diagnosisCode) => {
         try {
-            await DoctorService.deleteDiagnosis(diagnosisCode);
-            setSuccessMessage('Diagnosis deleted successfully!');
-            fetchDiagnosisList();
+            const success = await DoctorService.deleteDiagnosis(diagnosisCode);
+            if (success) {
+                setSuccessMessage('Diagnosis deleted successfully!');
+                fetchDiagnosisList();
+            } else {
+                setError('Failed to delete diagnosis. Please try again.');
+            }
         } catch (err) {
             setError('Failed to delete diagnosis. Please try again.');
         }

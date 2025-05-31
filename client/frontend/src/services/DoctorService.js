@@ -86,11 +86,16 @@ export const DoctorService = {
     getDiagnosisList: async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${API_URL}/doctors/getDiagnosis`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-            return data;
+            const response = await axios.get(
+                `${API_URL}/doctors/getDiagnosis`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
         } catch (error) {
             console.error('Error fetching diagnosis list:', error);
             throw error;
@@ -101,8 +106,11 @@ export const DoctorService = {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                `${API_URL}/doctors/diagnosePatient`,
-                JSON.stringify(diagnosisData),
+                `${API_URL}/doctors/addDiagnosis`,
+                {
+                    diagnosisCode: diagnosisData.diagnosisCode,
+                    diagnosisName: diagnosisData.diagnosisName
+                },
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -142,7 +150,7 @@ export const DoctorService = {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.delete(
-                `${API_URL}/doctors/deleteDiagnosis/${diagnosisCode}`,
+                `${API_URL}/doctors/diagnoses/${diagnosisCode}`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
