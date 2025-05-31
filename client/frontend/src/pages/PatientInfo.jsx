@@ -1,36 +1,100 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { PatientContext } from '../Context/PatientContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function PatientInfo() {
     const [patient, setPatient] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { patientId } = useContext(PatientContext);
+    const navigate = useNavigate();
 
     const getPatientInfo = async () => {
+      console.log("From PatientInfo")
         try {
             setLoading(true);
             setError(null);
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                'https://religious-tammie-tamim21-353bd377.koyeb.app/getPatient',
-                JSON.stringify({ PatientID: patientId }),
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+            const role = localStorage.getItem('role');
+            
+            console.log('Current token:', token);
+            console.log('Current role:', role);
+            console.log('Current patientId:', patientId);
+
+            if (!token) {
+                console.log('No token found, redirecting to login');
+                navigate('/login');
+                return;
+            }
+
+            if (!patientId) {
+                console.log('No patientId found');
+                setError('No patient ID provided');
+                return;
+            }
+
+            // Create the request payload
+            const payload = {
+                PatientID: patientId
+            };
+
+            console.log('Sending request with payload:', payload);
+
+            const response = await axios({
+                method: 'post',
+                url: 'https://religious-tammie-tamim21-353bd377.koyeb.app/getPatient',
+                data: payload,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                validateStatus: function (status) {
+                    return status < 500; // Resolve only if the status code is less than 500
                 }
-            );
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            console.log('Response data:', response.data);
+
+            if (response.status === 403) {
+                console.log('Received 403, clearing auth data');
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                navigate('/login');
+                return;
+            }
 
             if (response.data) {
-                const patientData = JSON.parse(response.data);
-                setPatient(patientData);
+                try {
+                    const patientData = typeof response.data === 'string' 
+                        ? JSON.parse(response.data) 
+                        : response.data;
+                    console.log('Parsed patient data:', patientData);
+                    setPatient(patientData);
+                } catch (parseError) {
+                    console.error('Error parsing patient data:', parseError);
+                    setError('Invalid patient data received');
+                }
             }
         } catch (err) {
-            console.error('Error fetching patient info:', err);
-            setError('Failed to fetch patient information');
+            console.error('Error details:', {
+                status: err.response?.status,
+                data: err.response?.data,
+                headers: err.response?.headers,
+                message: err.message
+            });
+            
+            if (err.response?.status === 403) {
+                console.log('Caught 403 error, clearing auth data');
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                navigate('/login');
+            } else {
+                setError(err.response?.data?.message || 'Failed to fetch patient information');
+            }
         } finally {
             setLoading(false);
         }
@@ -38,6 +102,7 @@ export default function PatientInfo() {
 
     useEffect(() => {
         if (patientId) {
+            console.log('PatientId changed:', patientId);
             getPatientInfo();
         }
     }, [patientId]);
