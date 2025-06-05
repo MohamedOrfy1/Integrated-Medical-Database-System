@@ -85,6 +85,11 @@ public class CommonServiceImpl implements CommonService {
         return extractAgeFromDOB(extractDOBFromID(ID));
     }
 
+    @Override
+    public boolean isMale(String ID){
+        return (ID.charAt(12) - '0') % 2 != 0;
+    }
+
 
     }
 

@@ -6,6 +6,10 @@ import com.example.demo.service.DoctorService;
 import com.example.demo.service.impl.JWTServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +20,8 @@ import com.example.demo.model.Doctor;
 import com.example.demo.service.PDFGenService;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 @CrossOrigin(origins = {
@@ -30,6 +36,7 @@ public class DoctorController {
     private final CommonService commonService;
     private final PDFGenService pdfGenService;
     private final JWTServiceImpl jwtService;
+    private  final String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/";
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -42,7 +49,6 @@ public class DoctorController {
         this.commonService = commonService;
         this.pdfGenService = pdfGenService;
         this.jwtService = jwtService;
-
     }
 
     @PreAuthorize("hasAuthority('EMP')")
@@ -106,19 +112,21 @@ public class DoctorController {
         }
     }
 //-----------------------------------------------
-    /*@PreAuthorize("hasAuthority('DOC')")
+    @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getReportTest")
-    public ResponseEntity<String> getReportTest(@RequestBody String TestId) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode rootNode = objectMapper.readTree(TestId);
-            String tid = rootNode.path("TestId").asText();
-            return ResponseEntity.ok(PDFGenService.(tid));
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
-    }*/
+    public ResponseEntity<Resource> getReportTest(@RequestBody Integer TestId)throws IOException {
+        doctorService.genReport(TestId);
+
+        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/pdf"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+
     //-----------------------------------------------
 
     @PreAuthorize("hasAuthority('DOC')")

@@ -147,11 +147,11 @@ public class EmployeeController {
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/genReport")
     public ResponseEntity<Resource> downloadFile(@RequestBody String ReportJson) throws IOException { //it downloads the file
-        try {
+            try {
 
-            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders(ReportJson));
-        }catch(Exception e){
-        }
+                pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders(ReportJson));
+            }catch(Exception e){
+            }
 
         Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
 

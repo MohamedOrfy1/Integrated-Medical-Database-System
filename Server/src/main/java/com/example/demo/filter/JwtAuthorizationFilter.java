@@ -39,8 +39,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (jwtservice.isTokenValid(token)) {
             String id = jwtservice.getIDFromToken(token);
             String role = jwtservice.getRoleFromToken(token);
-            System.out.println(id);
-            System.out.println(role);
 
             Authentication auth = new UsernamePasswordAuthenticationToken(
                     id,

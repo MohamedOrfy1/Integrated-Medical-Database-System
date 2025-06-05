@@ -1,7 +1,9 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.DTO.BloodTestAttributeDTO;
 import com.example.demo.DTO.DiagnosisDTO;
 import com.example.demo.DTO.DiagnosisPatientDTO;
+import com.example.demo.DTO.TestHeaderInfoDTO;
 import com.example.demo.repository.*;
 import com.example.demo.service.DoctorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,10 +34,14 @@ public class DoctorServiceImpl implements DoctorService {
     private final PatientTestRepository patientTestRepository;
     private final EmployeeServiceImpl employeeService;
     private final CommonServiceImpl commonService;
+    private final TestAttributeRepository testAttributeRepository;
+    private final PDFGenServiceImpl pdfGenService;
+    private final BloodTestRepository bloodTestRepository;
 
     @Autowired
     public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository,
-                             AdmissionRepository admissionRepository,PatientTestRepository patientTestRepository,EmployeeServiceImpl employeeService,CommonServiceImpl commonService) {
+                             AdmissionRepository admissionRepository,PatientTestRepository patientTestRepository,EmployeeServiceImpl employeeService,CommonServiceImpl commonService, TestAttributeRepository testAttributeRepository,PDFGenServiceImpl pdfGenService,
+                             BloodTestRepository bloodTestRepository) {
         this.doctorRepository = doctorRepository;
         this.diagnosisRepository = diagnosisRepository;
         this.patientDiagnosisRepository = patientDiagnosisRepository;
@@ -43,6 +49,9 @@ public class DoctorServiceImpl implements DoctorService {
         this.patientTestRepository = patientTestRepository;
         this.employeeService = employeeService;
         this.commonService = commonService;
+        this.testAttributeRepository = testAttributeRepository;
+        this.pdfGenService = pdfGenService;
+        this.bloodTestRepository = bloodTestRepository;
     }
 
     @Override
@@ -234,8 +243,6 @@ public class DoctorServiceImpl implements DoctorService {
             System.out.println("d.diagnosisName--else");
             parameter = "d.diagnosisName";
         }
-        //System.out.println("------------------------------------------");
-        //System.out.println(parameter);
         List<DiagnosisPatientDTO> pts = patientDiagnosisRepository.getAllDiagnosisPatients(parameter);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -245,5 +252,19 @@ public class DoctorServiceImpl implements DoctorService {
             System.out.println(e);
             return null;
         }
+    }
+
+    @Override
+    public void genReport(Integer TestId){
+        List<BloodTestAttributeDTO> atts =testAttributeRepository.findTestAttributesWithRangesAsDTO(TestId);
+        TestHeaderInfoDTO hd = bloodTestRepository.findBloodTestReportByTestId(TestId);
+        try {
+
+            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholdersFromDTO(hd,atts));
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+
     }
 }
