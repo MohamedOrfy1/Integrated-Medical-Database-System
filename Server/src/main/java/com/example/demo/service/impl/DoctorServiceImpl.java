@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.DTO.DiagnosisDTO;
+import com.example.demo.DTO.DiagnosisPatientDTO;
 import com.example.demo.repository.*;
 import com.example.demo.service.DoctorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +19,7 @@ import com.example.demo.service.DoctorService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -212,6 +214,36 @@ public class DoctorServiceImpl implements DoctorService {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    @Override
+    public String getDiagnosedPatients(String sortBy){
+        String parameter;
+        //System.out.println(sortBy);
+        if (Objects.equals(sortBy, "1")){
+            System.out.println("d.diagnosisName");
+            parameter = "d.diagnosisName";
+        }else if(Objects.equals(sortBy, "2")){
+            System.out.println("pd.id.patientId");
+            parameter = "pd.id.patientId";
+        }else if(Objects.equals(sortBy, "3")){
+            System.out.println("pd.id.diagnosisDate");
+            parameter = "pd.id.diagnosisDate";
+        }else{
+            System.out.println("d.diagnosisName--else");
+            parameter = "d.diagnosisName";
+        }
+        //System.out.println("------------------------------------------");
+        //System.out.println(parameter);
+        List<DiagnosisPatientDTO> pts = patientDiagnosisRepository.getAllDiagnosisPatients(parameter);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.writeValueAsString(pts);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
     }
 }

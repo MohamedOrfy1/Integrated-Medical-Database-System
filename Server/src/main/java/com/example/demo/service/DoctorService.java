@@ -20,5 +20,6 @@ public interface DoctorService {
     String getPatientDataJson(String patientId);
     boolean addDiagnosis(String diagnosisCode,String diagnosisName);
     boolean deleteDiagnosis(String diagnosisCode);
+    String getDiagnosedPatients(String sortBy);
 }
 

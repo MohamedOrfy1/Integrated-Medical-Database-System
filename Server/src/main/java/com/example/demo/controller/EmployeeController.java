@@ -24,7 +24,10 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@CrossOrigin(origins = "https://imbdc.vercel.app/", allowedHeaders = "*")
+@CrossOrigin(origins = {
+        "https://imbdc.vercel.app/",
+        "http://localhost:5173"  // Add your additional origin here
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {

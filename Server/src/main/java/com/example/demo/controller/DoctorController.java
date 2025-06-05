@@ -18,7 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-@CrossOrigin(origins = "https://imbdc.vercel.app/", allowedHeaders = "*")
+@CrossOrigin(origins = {
+        "https://imbdc.vercel.app/",
+        "http://localhost:5173"
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
 public class DoctorController {
@@ -121,15 +124,24 @@ public class DoctorController {
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatient")
     public ResponseEntity<String> getPatient(@RequestBody String patientid) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                JsonNode rootNode = objectMapper.readTree(patientid);
-                String pid = rootNode.path("PatientID").asText();
-                return ResponseEntity.ok(doctorService.getPatientDataJson(pid));
-            } catch (Exception e) {
-                System.out.println(e);
-                return null;
-            }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(patientid);
+            String pid = rootNode.path("PatientID").asText();
+            return ResponseEntity.ok(doctorService.getPatientDataJson(pid));
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+
+
+        @PreAuthorize("hasAuthority('DOC')")
+        @PostMapping("/getDiagnosedPatients")
+        public ResponseEntity<String> getDiagnosedPatients(@RequestBody String sortBy) {
+        //System.out.println(sortBy);
+        return ResponseEntity.ok(doctorService.getDiagnosedPatients(sortBy));
     }
 
 

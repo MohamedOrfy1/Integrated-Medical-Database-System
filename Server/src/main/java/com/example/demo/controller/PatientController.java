@@ -11,7 +11,10 @@ import com.example.demo.model.Patient;
 import org.springframework.http.ResponseEntity;
 
 
-@CrossOrigin(origins = "https://imbdc.vercel.app/", allowedHeaders = "*")
+@CrossOrigin(origins = {
+        "https://imbdc.vercel.app/",
+        "http://localhost:5173"  // Add your additional origin here
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
