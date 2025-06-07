@@ -31,25 +31,49 @@ const Research = () => {
     { label: '>60', min: 61, max: Infinity },
   ];
 
+    // Helper function to parse Egyptian National ID
+    const parseEgyptianNationalId = (nationalId) => {
+        const idString = String(nationalId);
 
-    // API Placeholder --> CHECK
-    // useEffect(() => {
-    //     const fetchPatients = async () => {
-    //         try {
-    //             const response = await fetch('/api/patients');
-    //             if (!response.ok) {
-    //                 throw new Error('Network response was not ok');
-    //             }
-    //             const data = await response.json();
-    //             setPatients(data);
-    //         } catch (error) {
-    //             console.error('Error fetching patients:', error);
-    //         }
-    //     };
+        if (idString.length !== 14) {
+            console.error("Invalid National ID length:", idString);
+            return null;
+        }
 
-    //     fetchPatients();
-    // }, []);
+        // Century
+        const centuryDigit = parseInt(idString.substring(0, 1));
+        let yearPrefix;
+        if (centuryDigit === 2) {
+            yearPrefix = 1900;
+        } else if (centuryDigit === 3) {
+            yearPrefix = 2000;
+        } else {
+            console.error("Invalid century digit in National ID:", centuryDigit);
+            return null;
+        }
 
+        // Birth Date (YYMMDD)
+        const yearSuffix = parseInt(idString.substring(1, 3));
+        const month = parseInt(idString.substring(3, 5));
+        const day = parseInt(idString.substring(5, 7));
+
+        const birthYear = yearPrefix + yearSuffix;
+
+        // Calculate age
+        const today = new Date();
+        const birthDate = new Date(birthYear, month - 1, day); // Month is 0-indexed
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        // Gender (13th digit from left, 2nd to last)
+        const genderDigit = parseInt(idString.substring(12, 13));
+        const gender = genderDigit % 2 === 1 ? 'Male' : 'Female';
+
+        return { age, gender, birthYear, birthMonth: month, birthDay: day };
+    };
 
     // For testing only --> Use API 
     const predefinedDiagnoses = [
@@ -86,20 +110,36 @@ const Research = () => {
         {firstName: 'Sam', age: 40, diagnosis: 'Diagnosis 6'},
         {firstName: 'Tina', age: 55, diagnosis: 'Diagnosis 3'},
     ];
-    setPatients(examples);
-    setFilterPatient(examples);
 
-    // Call the API to log the response, without altering static data
-    const logDiagnosedPatients = async () => {
+    // Call the API to log the response and prepare data for display
+    const fetchAndProcessDiagnosedPatients = async () => {
         try {
-            const result = await DoctorService.getDiagnosedPatients("1");
-            console.log('API Response - Diagnosed Patients:', result);
+            const result = await DoctorService.getDiagnosedPatients("1"); 
+            console.log('API Response - Diagnosed Patients (Raw):', result);
+
+            const transformedData = result.map((patient, index) => {
+                const idInfo = parseEgyptianNationalId(patient.patientId);
+                return {
+                    firstName: `Patient name - ${index + 1}`,
+                    diagnosis: patient.diagnosisName,
+                    age: idInfo ? idInfo.age : 'N/A',
+                    gender: idInfo ? idInfo.gender : 'N/A',
+
+                    patientId: patient.patientId 
+                };
+            });
+
+            console.log('API Response - Diagnosed Patients (Processed):', transformedData);
+
         } catch (error) {
-            console.error('Error fetching diagnosed patients:', error);
+            console.error('Error fetching and processing diagnosed patients:', error);
+            setError('Failed to fetch and process patient data.');
         }
     };
 
-    logDiagnosedPatients();
+    setPatients(examples);
+    setFilterPatient(examples);
+    fetchAndProcessDiagnosedPatients();
   }, []);
 
 
