@@ -164,15 +164,18 @@ export const DoctorService = {
             
             console.log('Delete response:', response);
             
-            // The backend returns a boolean in the response body
-            return response.data === true;
+            // If response.data is false, it means the deletion failed
+            if (response.data === false) {
+                throw new Error('DIAGNOSIS_IN_USE');
+            }
+            
+            return true;
         } catch (error) {
             console.error('Error deleting diagnosis:', error.response || error);
-            // If the error is due to the diagnosis being in use, return false
-            if (error.response?.status === 400) {
-                return false;
+            if (error.message === 'DIAGNOSIS_IN_USE') {
+                throw error;
             }
-            throw error;
+            throw new Error('DELETE_FAILED');
         }
     },
 
@@ -206,6 +209,32 @@ export const DoctorService = {
             return response.data;
         } catch (error) {
             console.error('Error in getPatient:', error);
+            throw error;
+        }
+    },
+
+    getDiagnosedPatients: async (sortBy) => {
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Making request to get diagnosed patients with sort:', sortBy);
+            
+            const response = await axios({
+                method: 'post',
+                url: `${API_URL}/doctors/getDiagnosedPatients`,
+                data: sortBy,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+
+            console.log('Get diagnosed patients response status:', response.status);
+            console.log('Get diagnosed patients response data:', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error('Error in getDiagnosedPatients:', error);
             throw error;
         }
     }

@@ -24,6 +24,9 @@ export default function Navbar() {
                         {userRole === 'DOC' && (
                             <li><Link to="/hematology">Hematology</Link></li>
                         )}
+                        {userRole === 'DOC' && (
+                            <li><Link to="/research">Research</Link></li>
+                        )}
                     </ul>
                 </div>
 

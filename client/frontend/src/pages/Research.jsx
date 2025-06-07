@@ -3,6 +3,7 @@ import { Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 import '../styles/Research.css';
+import { DoctorService } from '../services/DoctorService';
 
 const Research = () => {
 
@@ -87,7 +88,19 @@ const Research = () => {
     ];
     setPatients(examples);
     setFilterPatient(examples);
-    }, []);
+
+    // Call the API to log the response, without altering static data
+    const logDiagnosedPatients = async () => {
+        try {
+            const result = await DoctorService.getDiagnosedPatients("1");
+            console.log('API Response - Diagnosed Patients:', result);
+        } catch (error) {
+            console.error('Error fetching diagnosed patients:', error);
+        }
+    };
+
+    logDiagnosedPatients();
+  }, []);
 
 
 
