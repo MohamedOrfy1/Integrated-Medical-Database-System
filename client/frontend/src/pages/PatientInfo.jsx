@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { PatientContext } from '../Context/PatientContext';
 import { useNavigate } from 'react-router-dom';
 import { DoctorService } from '../services/DoctorService';
+import '../styles/Patient.css'; 
 
 export default function PatientInfo() {
     const [patient, setPatient] = useState(null);
@@ -67,67 +68,48 @@ export default function PatientInfo() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative max-w-xl mx-auto mt-4" role="alert">
-                <strong className="font-bold">Error! </strong>
-                <span className="block sm:inline">{error}</span>
+            <div className="alert alert-error" role="alert">
+                <strong className="alert-title">Error! </strong>
+                <span className="alert-message">{error}</span>
             </div>
         );
     }
 
     if (!patient) {
         return (
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative max-w-xl mx-auto mt-4" role="alert">
-                <strong className="font-bold">No Data Available</strong>
-                <span className="block sm:inline"> Patient information not found.</span>
+            <div className="alert alert-warning" role="alert">
+                <strong className="alert-title">No Data Available</strong>
+                <span className="alert-message"> Patient information not found.</span>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-2xl p-6 max-w-xl mx-auto shadow text-gray-900 space-y-6">
-            <div className="text-xl font-bold text-blue-400">
-                {patient.firstName} {patient.familyName}
+        <div className="patient-info-card">
+            <div className="patient-name">
+                {patient.first_name} {patient.family_name}
             </div>
-
-            <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
-                <div>
-                    <p className="text-gray-500">Registration Date</p>
-                    <p>{new Date(patient.registrationDate).toLocaleDateString()}</p>
+            <div className="patient-details-grid">
+                <div className="patient-field">
+                    <p className="patient-field-label">Registration Date</p>
+                    <p className="patient-field-value">
+                        {new Date(patient.registrationDate).toLocaleDateString()}
+                    </p>
                 </div>
-                <div>
-                    <p className="text-gray-500">Age</p>
-                    <p>{patient.age}</p>
-                </div>
-                <div>
-                    <p className="text-gray-500">Gender</p>
-                    <p>{patient.gender}</p>
-                </div>
-                <div>
-                    <p className="text-gray-500">Phone Number</p>
-                    <p>{patient.phoneNumber}</p>
-                </div>
-                <div>
-                    <p className="text-gray-500">Address</p>
-                    <p>{patient.address}</p>
-                </div>
-                <div>
-                    <p className="text-gray-500">Blood Type</p>
-                    <p>{patient.bloodType}</p>
+                <div className="patient-field">
+                    <p className="patient-field-label">Age</p>
+                    <p className="patient-field-value">{patient.age}</p>
                 </div>
             </div>
         </div>
     );
 }
-
-
-
-
 

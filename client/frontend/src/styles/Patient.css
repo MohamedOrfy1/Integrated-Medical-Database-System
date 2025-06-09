@@ -1,0 +1,269 @@
+.patient-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #D4F0FA; 
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+@media (min-width: 1024px) {
+  .patient-container {
+    flex-direction: row;
+  }
+}
+
+.patient-info-section,
+.patient-tests-section {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .patient-info-section {
+    width: 50%; 
+  }
+  
+  .patient-tests-section {
+    width: 50%; 
+  }
+}
+
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid transparent;
+  border-bottom: 2px solid #60a5fa;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  position: relative;
+  max-width: 36rem;
+  margin: 1rem auto 0;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
+.alert-warning {
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+}
+
+.alert-title {
+  font-weight: bold;
+}
+
+.alert-message {
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .alert-message {
+    display: inline;
+  }
+}
+
+
+.patient-info-card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  color: #111827;
+}
+
+.patient-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2B95C3;
+  margin-bottom:10px;
+}
+
+.patient-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 1.5rem 2rem; 
+  font-size: 1rem;
+}
+
+.patient-field {
+  margin-bottom: 1rem;
+}
+
+.patient-field-label {
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  font-size: 1.125rem; 
+}
+
+.patient-field-value {
+  margin: 0;
+  font-size: 1.25rem; 
+  font-weight: 600; 
+  color: #111827;
+}
+
+
+.tests-container {
+  max-width: 100%; 
+  margin: 0;
+  padding: 1rem;
+  background-color: transparent; 
+  min-height: 100vh;
+}
+
+.tests-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color:#2B95C3;
+  text-align: center;
+}
+
+.tests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.no-tests {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.125rem;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.test-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  padding: 1.25rem;
+}
+
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.test-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 0.25rem;
+}
+
+.test-type {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.test-date-container {
+  text-align: right;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.test-status {
+  font-size: 0.75rem;
+  color: #059669;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.test-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.test-view-btn {
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.test-view-btn:hover {
+  background-color: #bfdbfe;
+}
+
+.test-download-btn {
+  background-color: #dcfce7;
+  color: #166534;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.test-download-btn:hover {
+  background-color: #bbf7d0;
+}
+
+
+@media (max-width: 768px) {
+  .patient-details-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .patient-container {
+    padding: 1rem;
+    flex-direction: column;
+  }
+  
+  .patient-info-section,
+  .patient-tests-section {
+    width: 100%;
+  }
+  
+  .tests-container {
+    padding: 0.5rem;
+  }
+  
+  .test-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .test-date-container {
+    text-align: left;
+  }
+} 
+ 
