@@ -11,6 +11,7 @@ const Research = () => {
     const [filterPatient , setFilterPatient] = useState([]);
     const [diagnosisfilter, setDiagnosisfilter] = useState('');
     const [agefilter, setAgefilter] = useState('');
+    const [genderfilter, setGenderfilter] = useState('');
 
     const [activeTab, setActiveTab] = useState('list');
     const [successMessage, setSuccessMessage] = useState('');
@@ -87,28 +88,29 @@ const Research = () => {
 
     useEffect(() => {
     const examples = [
-        {firstName: 'John', age: 45, diagnosis: 'Diagnosis 1'},
-        {firstName: 'Mary', age: 32, diagnosis: 'Diagnosis 4'},
-        {firstName: 'Alice', age: 29, diagnosis: 'Diagnosis 2'},
-        {firstName: 'Bob', age: 50, diagnosis: 'Diagnosis 3'},
-        {firstName: 'Charlie', age: 22, diagnosis: 'Diagnosis 5'},
-        {firstName: 'David', age: 65, diagnosis: 'Diagnosis 6'},
-        {firstName: 'Eve', age: 18, diagnosis: 'Diagnosis 1'},
-        {firstName: 'Frank', age: 40, diagnosis: 'Diagnosis 6'},
-        {firstName: 'Grace', age: 55, diagnosis: 'Diagnosis 3'},
-        {firstName: 'Hannah', age: 30, diagnosis: 'Diagnosis 4'},
-        {firstName: 'Ian', age: 15, diagnosis: 'Diagnosis 6'},
-        {firstName: 'Jack', age: 70, diagnosis: 'Diagnosis 6'},
-        {firstName: 'Kathy', age: 25, diagnosis: 'Diagnosis 1'},
-        {firstName: 'Leo', age: 38, diagnosis: 'Diagnosis 2'},
-        {firstName: 'Mia', age: 20, diagnosis: 'Diagnosis 5'},
-        {firstName: 'Nina', age: 48, diagnosis: 'Diagnosis 3'},
-        {firstName: 'Oscar', age: 60, diagnosis: 'Diagnosis 4'},
-        {firstName: 'Paul', age: 22, diagnosis: 'Diagnosis 5'},
-        {firstName: 'Quinn', age: 65, diagnosis: 'Diagnosis 6'},
-        {firstName: 'Rita', age: 18, diagnosis: 'Diagnosis 1'},
-        {firstName: 'Sam', age: 40, diagnosis: 'Diagnosis 6'},
-        {firstName: 'Tina', age: 55, diagnosis: 'Diagnosis 3'},
+        {firstName: 'John', age: 45, diagnosis: 'Diagnosis 1', gender: 'Male'},
+        {firstName: 'Mary', age: 32, diagnosis: 'Diagnosis 4', gender: 'Female'},
+        {firstName: 'Alice', age: 29, diagnosis: 'Diagnosis 2', gender: 'Female'},
+        {firstName: 'Bob', age: 50, diagnosis: 'Diagnosis 3', gender: 'Male'},
+        {firstName: 'Charlie', age: 22, diagnosis: 'Diagnosis 5', gender: 'Male'},
+        {firstName: 'David', age: 65, diagnosis: 'Diagnosis 6', gender: 'Male'},
+        {firstName: 'Eve', age: 18, diagnosis: 'Diagnosis 1', gender: 'Female'},
+        {firstName: 'Frank', age: 40, diagnosis: 'Diagnosis 6', gender: 'Male'},
+        {firstName: 'Grace', age: 55, diagnosis: 'Diagnosis 3', gender: 'Female'},
+        {firstName: 'Hannah', age: 30, diagnosis: 'Diagnosis 4', gender: 'Female'},
+        {firstName: 'Frank', age: 40, diagnosis: 'Diagnosis 6', gender: 'Male'},
+        {firstName: 'Ian', age: 15, diagnosis: 'Diagnosis 6', gender: 'Male'},
+        {firstName: 'Jack', age: 70, diagnosis: 'Diagnosis 6', gender: 'Male'},
+        {firstName: 'Kathy', age: 25, diagnosis: 'Diagnosis 1', gender: 'Female'},
+        {firstName: 'Leo', age: 38, diagnosis: 'Diagnosis 2', gender: 'Male'},
+        {firstName: 'Mia', age: 20, diagnosis: 'Diagnosis 5', gender: 'Female'},
+        {firstName: 'Nina', age: 48, diagnosis: 'Diagnosis 3', gender: 'Female'},
+        {firstName: 'Oscar', age: 60, diagnosis: 'Diagnosis 4', gender: 'Male'},
+        {firstName: 'Paul', age: 22, diagnosis: 'Diagnosis 5', gender: 'Male'},
+        {firstName: 'Quinn', age: 65, diagnosis: 'Diagnosis 6', gender: 'Female'},
+        {firstName: 'Rita', age: 18, diagnosis: 'Diagnosis 1', gender: 'Female'},
+        {firstName: 'Sam', age: 40, diagnosis: 'Diagnosis 6', gender: 'Male'},
+        {firstName: 'Tina', age: 55, diagnosis: 'Diagnosis 3', gender: 'Female'},
     ];
 
     // Call the API to log the response and prepare data for display
@@ -172,6 +174,16 @@ const Research = () => {
             }
         }
 
+        if (genderfilter) {
+            result = result.filter(p => {
+                const g = p.gender.toLowerCase();
+                return genderfilter.toLowerCase() === 'male'
+                ? g === 'male'
+                : g === 'female';
+            });
+            }
+
+       
         const total = result.length;
         const byDiagnosis = {};
         result.forEach(p => {
@@ -198,7 +210,24 @@ const Research = () => {
     const handleClearFilters = () => {
         setDiagnosisfilter('');
         setAgefilter('');
+        setGenderfilter('');
         setFilterPatient(patients);
+        // setStats({ total: 0, byDiagnosis: {}, byAgeRange: {} });
+        const total = patients.length;
+        const byDiagnosis = {};
+        const byAgeRange = {};
+        ageRanges.forEach(r => {
+            byAgeRange[r.label] = 0;
+        });
+
+        patients.forEach(p => {
+            byDiagnosis[p.diagnosis] = (byDiagnosis[p.diagnosis] || 0) + 1;
+
+            const range = ageRanges.find(r => p.age >= r.min && p.age <= r.max);
+            if (range) byAgeRange[range.label]++;
+        });
+
+        setStats({ total, byDiagnosis, byAgeRange });
   };
 
     return (
@@ -229,6 +258,13 @@ const Research = () => {
                     <option key={i} value={range.label}>{range.label}</option>
                 ))}
                 </select>
+                <select value={genderfilter} className= 'research-select-age' onChange={(e) => setGenderfilter(e.target.value)}>
+                
+                <option value="" disabled hidden>Filter By Gender</option>
+                <option value={'Male'}>Male</option>
+                <option value={'Female'}>Female</option>
+                </select>
+
                 <button className='research-apply' onClick={applyFilters}>Apply Filters</button>
                 <button className='research-clear' onClick={handleClearFilters}>Clear Filters</button>
             </form>
@@ -243,6 +279,7 @@ const Research = () => {
                             <th>First Name</th>
                             <th>Age</th>
                             <th>Diagnosis</th>
+                            <th>Gender</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -251,6 +288,7 @@ const Research = () => {
                             <td>{patient.firstName}</td>
                             <td>{patient.age}</td>
                             <td>{patient.diagnosis}</td>
+                            <td>{patient.gender}</td>
                         </tr>
                         ))}
                     </tbody>
@@ -259,7 +297,6 @@ const Research = () => {
             </div>
             ) : (
             <div className="research-stats">
-                {/* We'll add actual stats content later */}
                 {/* <h2>Total patients: {stats.total}</h2>
                 {Object.keys(stats.byDiagnosis).map((diag, i) => (
                 <h2 key={i}>{diag}: {stats.byDiagnosis[diag]}</h2>
@@ -268,6 +305,7 @@ const Research = () => {
                 <div className='research-total'>
                     <h2>{diagnosisfilter}</h2>
                     <h2>{agefilter}</h2>
+                    <h2>{genderfilter}</h2>
                     <h2>Total Patients: {stats.total}</h2>                    
                 </div>
                 <div className='research-charts'>
