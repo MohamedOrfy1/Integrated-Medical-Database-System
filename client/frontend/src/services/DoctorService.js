@@ -9,18 +9,21 @@ export const DoctorService = {
     // Get all doctors
     getAllDoctors: async () => {
         try {
-            console.log('Making GET request to:', `${API_URL}/doctors/getdoc`);
-            const response = await fetch(`${API_URL}/doctors/getdoc`);
-            console.log('GET response status:', response.status);
-            
-            if (!response.ok) {
-                console.error('GET request failed with status:', response.status);
-                throw new Error('Failed to fetch doctors');
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
             }
+
+            const response = await axios.get(`${API_URL}/doctors/getdoc`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             
-            const data = await response.json();
-            console.log('GET response data:', data);
-            return data;
+            console.log('GET response status:', response.status);
+            console.log('GET response data:', response.data);
+            return response.data;
         } catch (error) {
             console.error('Error in getAllDoctors:', error);
             throw error;
