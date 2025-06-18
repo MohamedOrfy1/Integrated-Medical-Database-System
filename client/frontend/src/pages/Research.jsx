@@ -12,6 +12,7 @@ const Research = () => {
     const [diagnosisfilter, setDiagnosisfilter] = useState('');
     const [agefilter, setAgefilter] = useState('');
     const [genderfilter, setGenderfilter] = useState('');
+    const [diagnoses, setDiagnoses] = useState([]);
 
     const [activeTab, setActiveTab] = useState('list');
     const [successMessage, setSuccessMessage] = useState('');
@@ -19,8 +20,6 @@ const Research = () => {
 
     // For statistics
     const [stats, setStats] = useState({ total: 0, byDiagnosis: {} ,byAgeRange: {} });
-
- 
 
     const ageRanges = [
     { label: '1-10', min: 1, max: 10 },
@@ -76,17 +75,18 @@ const Research = () => {
         return { age, gender, birthYear, birthMonth: month, birthDay: day };
     };
 
-    // For testing only --> Use API 
-    const predefinedDiagnoses = [
-    'Diagnosis 1',
-    'Diagnosis 2',
-    'Diagnosis 3',
-    'Diagnosis 4',
-    'Diagnosis 5',
-    'Diagnosis 6'
-  ];
-
     useEffect(() => {
+        // Fetch diagnoses list
+        const fetchDiagnoses = async () => {
+            try {
+                const diagnosisList = await DoctorService.getDiagnosisList();
+                setDiagnoses(diagnosisList);
+            } catch (error) {
+                console.error('Error fetching diagnoses:', error);
+                setError('Failed to fetch diagnoses list.');
+            }
+        };
+
         // Call the API to fetch and process patient data
         const fetchAndProcessDiagnosedPatients = async () => {
             try {
@@ -140,24 +140,9 @@ const Research = () => {
             }
         };
 
+        fetchDiagnoses();
         fetchAndProcessDiagnosedPatients();
     }, []);
-
-
-
-
-
-    // const handleDiagnosisChange = (e) => {
-    //     const value = e.target.value;
-    //     setDiagnosisfilter(value);
-    //     applyFilters(diagnosisfilter, value);
-    // }
-
-    // const handleAgeChange = (e) => {
-    //     const value = e.target.value;
-    //     setAgefilter(value);
-    //     applyFilters(value, agefilter);
-    // }
 
     const applyFilters = () => {
         let result = [...patients];
@@ -244,12 +229,11 @@ const Research = () => {
             </div>
 
             <form onSubmit={e => e.preventDefault()}>
-                <select value={diagnosisfilter} className= 'research-select-diagnosis' onChange={(e) => setDiagnosisfilter(e.target.value)}>
-                <option value="" disabled hidden>Filter By Diagnosis</option>
-                {predefinedDiagnoses.map((d, i) => (
-                    <option key={i} value={d}>{d}</option>
-                ))}
-
+                <select value={diagnosisfilter} className='research-select-diagnosis' onChange={(e) => setDiagnosisfilter(e.target.value)}>
+                    <option value="" disabled hidden>Filter By Diagnosis</option>
+                    {diagnoses.map((diagnosis, i) => (
+                        <option key={i} value={diagnosis.diagnosisName}>{diagnosis.diagnosisName}</option>
+                    ))}
                 </select>
                 <select value={agefilter} className= 'research-select-age' onChange={(e) => setAgefilter(e.target.value)}>
                 <option value="" disabled hidden>Filter By Age</option>
