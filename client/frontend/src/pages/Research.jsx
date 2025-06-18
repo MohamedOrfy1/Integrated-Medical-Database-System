@@ -87,62 +87,61 @@ const Research = () => {
   ];
 
     useEffect(() => {
-    const examples = [
-        {firstName: 'John', age: 45, diagnosis: 'Diagnosis 1', gender: 'Male'},
-        {firstName: 'Mary', age: 32, diagnosis: 'Diagnosis 4', gender: 'Female'},
-        {firstName: 'Alice', age: 29, diagnosis: 'Diagnosis 2', gender: 'Female'},
-        {firstName: 'Bob', age: 50, diagnosis: 'Diagnosis 3', gender: 'Male'},
-        {firstName: 'Charlie', age: 22, diagnosis: 'Diagnosis 5', gender: 'Male'},
-        {firstName: 'David', age: 65, diagnosis: 'Diagnosis 6', gender: 'Male'},
-        {firstName: 'Eve', age: 18, diagnosis: 'Diagnosis 1', gender: 'Female'},
-        {firstName: 'Frank', age: 40, diagnosis: 'Diagnosis 6', gender: 'Male'},
-        {firstName: 'Grace', age: 55, diagnosis: 'Diagnosis 3', gender: 'Female'},
-        {firstName: 'Hannah', age: 30, diagnosis: 'Diagnosis 4', gender: 'Female'},
-        {firstName: 'Frank', age: 40, diagnosis: 'Diagnosis 6', gender: 'Male'},
-        {firstName: 'Ian', age: 15, diagnosis: 'Diagnosis 6', gender: 'Male'},
-        {firstName: 'Jack', age: 70, diagnosis: 'Diagnosis 6', gender: 'Male'},
-        {firstName: 'Kathy', age: 25, diagnosis: 'Diagnosis 1', gender: 'Female'},
-        {firstName: 'Leo', age: 38, diagnosis: 'Diagnosis 2', gender: 'Male'},
-        {firstName: 'Mia', age: 20, diagnosis: 'Diagnosis 5', gender: 'Female'},
-        {firstName: 'Nina', age: 48, diagnosis: 'Diagnosis 3', gender: 'Female'},
-        {firstName: 'Oscar', age: 60, diagnosis: 'Diagnosis 4', gender: 'Male'},
-        {firstName: 'Paul', age: 22, diagnosis: 'Diagnosis 5', gender: 'Male'},
-        {firstName: 'Quinn', age: 65, diagnosis: 'Diagnosis 6', gender: 'Female'},
-        {firstName: 'Rita', age: 18, diagnosis: 'Diagnosis 1', gender: 'Female'},
-        {firstName: 'Sam', age: 40, diagnosis: 'Diagnosis 6', gender: 'Male'},
-        {firstName: 'Tina', age: 55, diagnosis: 'Diagnosis 3', gender: 'Female'},
-    ];
+        // Call the API to fetch and process patient data
+        const fetchAndProcessDiagnosedPatients = async () => {
+            try {
+                const result = await DoctorService.getDiagnosedPatients("1"); 
+                console.log('API Response - Diagnosed Patients (Raw):', result);
 
-    // Call the API to log the response and prepare data for display
-    const fetchAndProcessDiagnosedPatients = async () => {
-        try {
-            const result = await DoctorService.getDiagnosedPatients("1"); 
-            console.log('API Response - Diagnosed Patients (Raw):', result);
+                const transformedData = result.map((patient, index) => {
+                    const idInfo = parseEgyptianNationalId(patient.patientId);
+                    return {
+                        firstName: `Patient name - ${index + 1}`,
+                        diagnosis: patient.diagnosisName,
+                        age: idInfo ? idInfo.age : 'N/A',
+                        gender: idInfo ? idInfo.gender : 'N/A',
+                        patientId: patient.patientId 
+                    };
+                });
 
-            const transformedData = result.map((patient, index) => {
-                const idInfo = parseEgyptianNationalId(patient.patientId);
-                return {
-                    firstName: `Patient name - ${index + 1}`,
-                    diagnosis: patient.diagnosisName,
-                    age: idInfo ? idInfo.age : 'N/A',
-                    gender: idInfo ? idInfo.gender : 'N/A',
+                console.log('API Response - Diagnosed Patients (Processed):', transformedData);
+                
+                // Set the states with the transformed data
+                setPatients(transformedData);
+                setFilterPatient(transformedData);
 
-                    patientId: patient.patientId 
-                };
-            });
+                // Calculate initial stats
+                const total = transformedData.length;
+                const byDiagnosis = {};
+                const byAgeRange = {};
+                
+                // Initialize age ranges
+                ageRanges.forEach(r => {
+                    byAgeRange[r.label] = 0;
+                });
 
-            console.log('API Response - Diagnosed Patients (Processed):', transformedData);
+                // Calculate statistics
+                transformedData.forEach(p => {
+                    // Count by diagnosis
+                    byDiagnosis[p.diagnosis] = (byDiagnosis[p.diagnosis] || 0) + 1;
 
-        } catch (error) {
-            console.error('Error fetching and processing diagnosed patients:', error);
-            setError('Failed to fetch and process patient data.');
-        }
-    };
+                    // Count by age range
+                    if (typeof p.age === 'number') {
+                        const range = ageRanges.find(r => p.age >= r.min && p.age <= r.max);
+                        if (range) byAgeRange[range.label]++;
+                    }
+                });
 
-    setPatients(examples);
-    setFilterPatient(examples);
-    fetchAndProcessDiagnosedPatients();
-  }, []);
+                setStats({ total, byDiagnosis, byAgeRange });
+
+            } catch (error) {
+                console.error('Error fetching and processing diagnosed patients:', error);
+                setError('Failed to fetch and process patient data.');
+            }
+        };
+
+        fetchAndProcessDiagnosedPatients();
+    }, []);
 
 
 
