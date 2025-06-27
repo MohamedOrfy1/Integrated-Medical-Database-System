@@ -23,6 +23,7 @@ const DoctorDashboard = () => {
     });
     const [diagnosisList, setDiagnosisList] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
+    const [searchPatientId, setSearchPatientId] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -173,7 +174,7 @@ const DoctorDashboard = () => {
             {successMessage && (
                 <div className="success-message">
                     {successMessage}
-                    <button onClick={() => setSuccessMessage('')}>×</button>
+                    <button onClick={() => setSuccessMessage('')}>&times;</button>
                 </div>
             )}
             <div className="dashboard-actions">
@@ -186,6 +187,24 @@ const DoctorDashboard = () => {
             </div>
             <div className="patients-list">
                 <h2>Your Patients</h2>
+                <div style={{ marginBottom: '16px' }}>
+                    <input
+                        type="text"
+                        placeholder="Search by National ID"
+                        value={searchPatientId}
+                        onChange={e => setSearchPatientId(e.target.value)}
+                        style={{
+                            height: '38px',
+                            border: '1px solid #ccc',
+                            borderRadius: '8px',
+                            padding: '0 12px',
+                            fontSize: '1rem',
+                            outline: 'none',
+                            background: '#fff',
+                            marginRight: '8px',
+                        }}
+                    />
+                </div>
                 {patients.length === 0 ? (
                     <p>No patients assigned yet.</p>
                 ) : (
@@ -200,35 +219,39 @@ const DoctorDashboard = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {patients.map((patient) => (
-                                <tr key={patient.patientId}>
-                                    <td>{patient.patientId ? `****${patient.patientId.slice(-4)}` : ''}</td>
-                                    <td>{[patient.firstName, patient.fatherName, patient.grandfatherName, patient.familyName].filter(Boolean).join(' ')}</td>
-                                    <td>{new Date(patient.registrationDate).toLocaleDateString()}</td>
-                                    <td>
-                                        {patient.latestDiagnosis
-                                            ? `${
-                                                patient.latestDiagnosis.diagnosisName ||
-                                                diagnosisList.find(d => d.diagnosisCode === patient.latestDiagnosis.diagnosisId)?.diagnosisName ||
-                                                patient.latestDiagnosis.diagnosisId
-                                            } (${patient.latestDiagnosis.diagnosisDate})`
-                                            : '—'}
-                                    </td>
-                                    <td>
-                                    <button onClick={() => handleAddDiagnosis(patient)}>
-                                        Add Diagnosis
-                                    </button>
-                                    <button
-                                        style={{ marginLeft: "8px" }}
-                                        onClick={() =>{ setPatientId(patient.patientId);
-                                            console.log(patientId)
-                                            navigate(`/patient`);
-                                            }}
-                                        > View Details
-                                    </button>
-                                    </td>   
-                                </tr>
-                            ))}
+                            {patients
+                                .filter(patient =>
+                                    !searchPatientId.trim() || (patient.patientId && patient.patientId.includes(searchPatientId.trim()))
+                                )
+                                .map((patient) => (
+                                    <tr key={patient.patientId}>
+                                        <td>{patient.patientId ? `****${patient.patientId.slice(-4)}` : ''}</td>
+                                        <td>{[patient.firstName, patient.fatherName, patient.grandfatherName, patient.familyName].filter(Boolean).join(' ')}</td>
+                                        <td>{new Date(patient.registrationDate).toLocaleDateString()}</td>
+                                        <td>
+                                            {patient.latestDiagnosis
+                                                ? `${
+                                                    patient.latestDiagnosis.diagnosisName ||
+                                                    diagnosisList.find(d => d.diagnosisCode === patient.latestDiagnosis.diagnosisId)?.diagnosisName ||
+                                                    patient.latestDiagnosis.diagnosisId
+                                                } (${patient.latestDiagnosis.diagnosisDate})`
+                                                : '—'}
+                                        </td>
+                                        <td>
+                                        <button onClick={() => handleAddDiagnosis(patient)}>
+                                            Add Diagnosis
+                                        </button>
+                                        <button
+                                            style={{ marginLeft: "8px" }}
+                                            onClick={() =>{ setPatientId(patient.patientId);
+                                                console.log(patientId)
+                                                navigate(`/patient`);
+                                                }}
+                                            > View Details
+                                        </button>
+                                        </td>   
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 )}

@@ -31,6 +31,7 @@ const Receptionist = () => {
     const [filterDate, setFilterDate] = useState('');
     const [employeeId, setEmployeeId] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [searchPatientId, setSearchPatientId] = useState('');
 
     useEffect(() => {
         console.log('Receptionist component mounted');
@@ -230,8 +231,10 @@ const Receptionist = () => {
     };
 
     const renderPatientList = () => {
-        const patientsToRender = filteredPatients.length > 0 ? filteredPatients : patients;
-        
+        let patientsToRender = filteredPatients.length > 0 ? filteredPatients : patients;
+        if (searchPatientId.trim() !== '') {
+            patientsToRender = patientsToRender.filter(p => p.patientId && p.patientId.includes(searchPatientId.trim()));
+        }
         return (
             <div className="patient-list">
                 <table>
@@ -391,59 +394,77 @@ const Receptionist = () => {
                 <div className="patients-list">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h2>Patient List</h2>
-                        <form onSubmit={handleFilterByDate} style={{ display: 'flex', alignItems: 'center', gap: '0', background: '#f5f8fa', padding: '8px 16px', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <input
-                                type="date"
-                                value={filterDate}
-                                onChange={(e) => setFilterDate(e.target.value)}
+                                type="text"
+                                placeholder="Search by National ID"
+                                value={searchPatientId}
+                                onChange={e => setSearchPatientId(e.target.value)}
                                 style={{
                                     height: '38px',
                                     border: '1px solid #ccc',
-                                    borderRadius: '8px 0 0 8px',
+                                    borderRadius: '8px',
                                     padding: '0 12px',
                                     fontSize: '1rem',
                                     outline: 'none',
                                     background: '#fff',
+                                    marginRight: '8px',
                                 }}
-                                placeholder="Select date"
                             />
-                            <button
-                                type="submit"
-                                style={{
-                                    height: '38px',
-                                    background: '#2196f3',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '0',
-                                    padding: '0 18px',
-                                    fontWeight: 'bold',
-                                    fontSize: '1rem',
-                                    cursor: 'pointer',
-                                    transition: 'background 0.2s',
-                                }}
-                            >
-                                Filter by Date
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleClearFilter}
-                                style={{
-                                    height: '38px',
-                                    background: '#fff',
-                                    color: '#2196f3',
-                                    border: '1px solid #2196f3',
-                                    borderRadius: '0 8px 8px 0',
-                                    padding: '0 14px',
-                                    fontWeight: 'bold',
-                                    fontSize: '1rem',
-                                    cursor: 'pointer',
-                                    marginLeft: '-1px',
-                                    transition: 'background 0.2s, color 0.2s',
-                                }}
-                            >
-                                Clear Filter
-                            </button>
-                        </form>
+                            <form onSubmit={handleFilterByDate} style={{ display: 'flex', alignItems: 'center', gap: '0', background: '#f5f8fa', padding: '8px 16px', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                                <input
+                                    type="date"
+                                    value={filterDate}
+                                    onChange={(e) => setFilterDate(e.target.value)}
+                                    style={{
+                                        height: '38px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '8px 0 0 8px',
+                                        padding: '0 12px',
+                                        fontSize: '1rem',
+                                        outline: 'none',
+                                        background: '#fff',
+                                    }}
+                                    placeholder="Select date"
+                                />
+                                <button
+                                    type="submit"
+                                    style={{
+                                        height: '38px',
+                                        background: '#2196f3',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '0',
+                                        padding: '0 18px',
+                                        fontWeight: 'bold',
+                                        fontSize: '1rem',
+                                        cursor: 'pointer',
+                                        transition: 'background 0.2s',
+                                    }}
+                                >
+                                    Filter by Date
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleClearFilter}
+                                    style={{
+                                        height: '38px',
+                                        background: '#fff',
+                                        color: '#2196f3',
+                                        border: '1px solid #2196f3',
+                                        borderRadius: '0 8px 8px 0',
+                                        padding: '0 14px',
+                                        fontWeight: 'bold',
+                                        fontSize: '1rem',
+                                        cursor: 'pointer',
+                                        marginLeft: '-1px',
+                                        transition: 'background 0.2s, color 0.2s',
+                                    }}
+                                >
+                                    Clear Filter
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     {loading ? (
                         <p>Loading patients...</p>

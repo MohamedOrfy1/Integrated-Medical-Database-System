@@ -33,33 +33,28 @@ export const DoctorService = {
     // Assign a doctor to a patient
     assignDoctorToPatient: async (PatientId, DoctorId) => {
         try {
-            console.log('Making POST request to:', `${API_URL}/employee/assign`);
-            const requestBody = JSON.stringify({
-                PatientId,
-                DoctorId
-            });
-            console.log('Request body:', requestBody);
-            
-            const response = await fetch(`${API_URL}/employee/assign`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await axios.post(
+                `${API_URL}/employee/assign`,
+                {
+                    PatientId,
+                    DoctorId
                 },
-                body: requestBody,
-            });
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
             
             console.log('POST response status:', response.status);
-            
-            if (!response.ok) {
-                const errorData = await response.text();
-                console.error('POST request failed with status:', response.status);
-                console.error('Error response:', errorData);
-                throw new Error(`Failed to assign doctor: ${errorData}`);
-            }
-            
-            const data = await response.json();
-            console.log('POST response data:', data);
-            return data;
+            console.log('POST response data:', response.data);
+            return response.data;
         } catch (error) {
             console.error('Error in assignDoctorToPatient:', error);
             throw error;
