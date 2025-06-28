@@ -32,6 +32,22 @@ export const HematologyService = {
         }
     },
 
+    getTestAttributes: async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${API_URL}/doctors/getatts`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching test attributes:', error);
+            throw error;
+        }
+    },
+
     parseHtmlFile: async (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();

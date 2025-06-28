@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { HematologyService } from '../services/HematologyService';
-import { CBC_TESTS } from '../services/cbcTestMeta';
 import '../styles/Hematology.css';
 
-const getTestMeta = (testName) => CBC_TESTS.find(t => t.name === testName);
-
-
-function parseHematologyReport(htmlString) {
+function parseHematologyReport(htmlString, testAttributes) {
     const parser = new window.DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
 
@@ -54,7 +50,7 @@ function parseHematologyReport(htmlString) {
     function parseTestValues(doc) {
         const tests = [];
         const metaMap = {};
-        CBC_TESTS.forEach(meta => {
+        testAttributes.forEach(meta => {
             metaMap[normalizeTestName(meta.name)] = meta;
             if (meta.aliases && Array.isArray(meta.aliases)) {
                 meta.aliases.forEach(alias => {
@@ -63,8 +59,8 @@ function parseHematologyReport(htmlString) {
             }
         });
 
-        // Debug: log all normalized CBC_TESTS names
-        console.log('CBC_TESTS normalized names:', Object.keys(metaMap));
+        // Debug: log all normalized test attribute names
+        console.log('Test attributes normalized names:', Object.keys(metaMap));
 
         Array.from(doc.querySelectorAll('font')).forEach(font => {
             const rawName = font.textContent.trim();
@@ -195,6 +191,8 @@ function parseHematologyReport(htmlString) {
 
 const Hematology = () => {
     const [activeTab, setActiveTab] = useState('manual');
+    const [testAttributes, setTestAttributes] = useState([]);
+    const [loadingAttributes, setLoadingAttributes] = useState(true);
     const [formData, setFormData] = useState({
         patient_info: {
             name: '',
@@ -204,7 +202,6 @@ const Hematology = () => {
         },
         test_details: {
             sample_date: '',
-            print_date: new Date().toISOString().split('T')[0],
             referring_physician: ''
         },
         blood_count_report: {
@@ -221,6 +218,21 @@ const Hematology = () => {
     const [addTestLoading, setAddTestLoading] = useState(false);
     const [addTestSuccess, setAddTestSuccess] = useState('');
     const [doctorId, setDoctorId] = useState('');
+
+    // Fetch test attributes from API
+    const fetchTestAttributes = async () => {
+        try {
+            setLoadingAttributes(true);
+            const attributes = await HematologyService.getTestAttributes();
+            setTestAttributes(attributes);
+            console.log('Fetched test attributes:', attributes);
+        } catch (error) {
+            console.error('Error fetching test attributes:', error);
+            setError('Failed to load test attributes. Please refresh the page.');
+        } finally {
+            setLoadingAttributes(false);
+        }
+    };
 
     // Extract doctor ID from JWT token on component mount
     useEffect(() => {
@@ -240,7 +252,14 @@ const Hematology = () => {
                 setError('Error extracting doctor information from token');
             }
         }
+        
+        // Fetch test attributes
+        fetchTestAttributes();
     }, []);
+
+    const getTestMeta = (testName) => {
+        return testAttributes.find(t => t.name === testName);
+    };
 
     const handleTestTypeChange = (index, testName) => {
         const meta = getTestMeta(testName);
@@ -337,7 +356,7 @@ const Hematology = () => {
             setFile(file);
             try {
                 const text = await file.text();
-                const extractedData = parseHematologyReport(text);
+                const extractedData = parseHematologyReport(text, testAttributes);
                 setFormData(extractedData);
                 setDoctorComments(extractedData.blood_count_report.report_comments || '');
             } catch (error) {
@@ -539,80 +558,86 @@ const Hematology = () => {
 
                 <div className="form-section">
                     <h2>Blood Count Tests</h2>
-                    <div className="tests-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Test Name</th>
-                                    <th>Result</th>
-                                    <th>Unit</th>
-                                    <th>Reference Range</th>
-                                    <th>Flag</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {formData.blood_count_report.tests.map((test, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            <select
-                                                value={test.test_name}
-                                                onChange={e => handleTestTypeChange(index, e.target.value)}
-                                                required
-                                            >
-                                                <option value="">Select Test</option>
-                                                {CBC_TESTS.map(t => (
-                                                    <option key={t.name} value={t.name}>{t.name}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                value={test.result}
-                                                onChange={e => handleResultChange(index, e.target.value)}
-                                                required
-                                                disabled={!test.test_name}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={test.unit}
-                                                readOnly
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={test.reference_range}
-                                                readOnly
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={test.flag}
-                                                readOnly
-                                            />
-                                        </td>
-                                        <td>
-                                            <button 
-                                                type="button" 
-                                                onClick={() => removeTestRow(index)}
-                                                className="remove-button"
-                                            >
-                                                Remove
-                                            </button>
-                                        </td>
+                    {loadingAttributes ? (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                            <p>Loading test attributes...</p>
+                        </div>
+                    ) : (
+                        <div className="tests-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Test Name</th>
+                                        <th>Result</th>
+                                        <th>Unit</th>
+                                        <th>Reference Range</th>
+                                        <th>Flag</th>
+                                        <th>Action</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <button type="button" onClick={addTestRow} className="add-button">
-                            Add Test
-                        </button>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {formData.blood_count_report.tests.map((test, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <select
+                                                    value={test.test_name}
+                                                    onChange={e => handleTestTypeChange(index, e.target.value)}
+                                                    required
+                                                >
+                                                    <option value="">Select Test</option>
+                                                    {testAttributes.map(t => (
+                                                        <option key={t.name} value={t.name}>{t.name}</option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    value={test.result}
+                                                    onChange={e => handleResultChange(index, e.target.value)}
+                                                    required
+                                                    disabled={!test.test_name}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    value={test.unit}
+                                                    readOnly
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    value={test.reference_range}
+                                                    readOnly
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    value={test.flag}
+                                                    readOnly
+                                                />
+                                            </td>
+                                            <td>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => removeTestRow(index)}
+                                                    className="remove-button"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <button type="button" onClick={addTestRow} className="add-button">
+                                Add Test
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="form-section">
