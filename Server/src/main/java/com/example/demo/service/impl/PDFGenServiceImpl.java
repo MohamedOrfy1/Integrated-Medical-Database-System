@@ -154,7 +154,7 @@ public class PDFGenServiceImpl implements PDFGenService {
                 "dr", hd.getReviewingDoctorName(),
                 "assist", hd.getAssistingDoctorName(),
                 "testid", String.valueOf(hd.getTestId()),
-                "comments", "",
+                "comments", hd.getComments(),
                 "tests" , tbody
         );
         for (Map.Entry<String, String> entry : values.entrySet()) {

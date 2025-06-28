@@ -22,5 +22,9 @@ public interface DoctorService {
     boolean deleteDiagnosis(String diagnosisCode);
     String getDiagnosedPatients(String sortBy);
     void genReport(Integer TestId);
+    boolean InsertTest(String Json);
+    boolean UpdateTest(Integer testId);
+    boolean DeleteTest(Integer testId);
+
 }
 

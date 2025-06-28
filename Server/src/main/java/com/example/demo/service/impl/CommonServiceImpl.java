@@ -53,7 +53,9 @@ public class CommonServiceImpl implements CommonService {
 
     private LocalDate extractDOBFromID(String id){
         if (id == null || id.length() != 14 || !id.matches("\\d{14}")) {
+            System.out.println(id);
             throw new IllegalArgumentException("ID must be exactly 14 numeric characters");
+
         }
 
         String centuryDigit = id.substring(0, 1);

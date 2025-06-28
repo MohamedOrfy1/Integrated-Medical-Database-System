@@ -17,6 +17,7 @@ public class TestHeaderInfoDTO {
     private final String patientName;
     private final String assistingDoctorName;
     private final String reviewingDoctorName;
+    private final String comments;
 
     public TestHeaderInfoDTO(
             Integer testId,
@@ -26,7 +27,8 @@ public class TestHeaderInfoDTO {
             String patientId,
             String patientName,
             String assistingDoctorName,
-            String reviewingDoctorName) {
+            String reviewingDoctorName,
+            String comments) {
         this.testId = testId;
         this.testType = testType;
         this.sampleDate = sampleDate;
@@ -35,6 +37,7 @@ public class TestHeaderInfoDTO {
         this.patientName = patientName;
         this.assistingDoctorName = assistingDoctorName;
         this.reviewingDoctorName = reviewingDoctorName;
+        this.comments = comments;
     }
     @Override
     public String toString() {
@@ -47,7 +50,8 @@ public class TestHeaderInfoDTO {
                 patientName != null ? patientName : "Unknown",
                 patientId != null ? patientId : "N/A",
                 assistingDoctorName != null ? assistingDoctorName : "Unassigned",
-                reviewingDoctorName != null ? reviewingDoctorName : "Unassigned",
+                reviewingDoctorName != null ? reviewingDoctorName : "Unassigned ",
+                comments,
                 printingDate != null ? printingDate.toString() : "null");
     }
 }

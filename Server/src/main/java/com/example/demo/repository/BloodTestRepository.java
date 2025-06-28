@@ -71,7 +71,8 @@ public interface BloodTestRepository extends JpaRepository<BloodTest, Integer> {
             "p.patientId, " +
             "CONCAT(p.firstName, ' ', p.fatherName, ' ', p.grandfatherName, ' ', p.familyName), " +
             "CONCAT(ad.firstName, ' ', ad.lastName), " +
-            "CONCAT(rd.firstName, ' ', rd.lastName)) " +
+            "CONCAT(rd.firstName, ' ', rd.lastName), " +
+            "bt.comments) " +
             "FROM PatientTest pt " +
             "JOIN pt.test bt " +
             "JOIN pt.patient p " +

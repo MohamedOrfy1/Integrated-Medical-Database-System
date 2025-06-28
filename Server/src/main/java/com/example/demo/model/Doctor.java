@@ -1,14 +1,16 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "doctor")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Doctor {
     @Id
     @Column(name = "doctor_id", nullable = false, length = 14)
@@ -42,5 +44,9 @@ public class Doctor {
 
     @Column(name = "name")
     private String name;
+
+    public Doctor(String doctorId) {
+        this.doctorId = doctorId;
+    }
 
 }

@@ -6,6 +6,7 @@ import com.example.demo.service.DoctorService;
 import com.example.demo.service.impl.JWTServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -57,9 +58,12 @@ public class DoctorController {
 
 
     @PostMapping("/login")
-    public String login(@RequestBody Doctor doc) {
-        String username = doc.getUsername();
-        String password = doc.getPassword();
+    public String login(@RequestBody String doc) {
+        JSONObject root = new JSONObject(doc);
+
+        String username = root.getString("username");
+        String password = root.getString("password");
+
 
         String sql = "SELECT COUNT(*) FROM Doctor WHERE username = ? AND password = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
@@ -198,6 +202,29 @@ public class DoctorController {
     public ResponseEntity<Boolean> deleteDiagnosis(@PathVariable String diagnosisCode) {
         try {
             boolean deleted = doctorService.deleteDiagnosis(diagnosisCode);
+            return deleted
+                    ? ResponseEntity.ok(true)
+                    : ResponseEntity.ok(false);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.ok(false);
+
+        }
+    }
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/insertest")
+    public ResponseEntity<Boolean> insertest(@RequestBody String jsontest) {
+        try {
+                return ResponseEntity.ok(doctorService.InsertTest(jsontest));
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
+    }
+    @PreAuthorize("hasAuthority('DOC')")
+    @DeleteMapping("/deletest")
+    public ResponseEntity<Boolean> deletest(@RequestBody String testid) {
+        try {
+            boolean deleted = doctorService.DeleteTest(Integer.parseInt(testid));
             return deleted
                     ? ResponseEntity.ok(true)
                     : ResponseEntity.ok(false);
