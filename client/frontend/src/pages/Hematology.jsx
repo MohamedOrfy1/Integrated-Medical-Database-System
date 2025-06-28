@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HematologyService } from '../services/HematologyService';
 import { CBC_TESTS } from '../services/cbcTestMeta';
 import '../styles/Hematology.css';
@@ -220,6 +220,27 @@ const Hematology = () => {
     const [error, setError] = useState('');
     const [addTestLoading, setAddTestLoading] = useState(false);
     const [addTestSuccess, setAddTestSuccess] = useState('');
+    const [doctorId, setDoctorId] = useState('');
+
+    // Extract doctor ID from JWT token on component mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const decodedToken = JSON.parse(jsonPayload);
+                setDoctorId(decodedToken.sub); // 'sub' is the standard JWT claim for subject (ID)
+                console.log('Extracted doctor ID:', decodedToken.sub);
+            } catch (error) {
+                console.error('Error decoding JWT token:', error);
+                setError('Error extracting doctor information from token');
+            }
+        }
+    }, []);
 
     const handleTestTypeChange = (index, testName) => {
         const meta = getTestMeta(testName);
@@ -372,21 +393,33 @@ const Hematology = () => {
         setAddTestSuccess('');
 
         try {
+            // Format dates from YYYY-MM-DD to DD-MM-YYYY
+            const formatDateForBackend = (dateString) => {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            };
+
             // Format the data according to the backend expectations
             const testData = {
                 test_details: {
                     patient_Id: formData.patient_info.test_id, // Using test_id as patient_Id
-                    sample_date: formData.test_details.sample_date,
-                    print_date: formData.test_details.print_date,
-                    referring_physician_Id: formData.test_details.referring_physician, // Using referring_physician as ID
-                    asissting_physician_Id: formData.test_details.referring_physician, // Using same as referring for now
-                    comments: doctorComments
+                    sample_date: formatDateForBackend(formData.test_details.sample_date),
+                    print_date: formatDateForBackend(formData.test_details.print_date),
+                    referring_physician_Id: doctorId || "28610151234561", // Use extracted doctor ID or fallback
+                    asissting_physician_Id: doctorId || "28807081234563", // Use extracted doctor ID or fallback
+                    comments: doctorComments || ""
                 },
                 CBC: {
-                    tests: formData.blood_count_report.tests.map(test => ({
-                        test_name: test.test_name,
-                        result: test.result.toString()
-                    }))
+                    tests: formData.blood_count_report.tests
+                        .filter(test => test.test_name && test.result) // Only include tests with names and results
+                        .map(test => ({
+                            test_name: test.test_name,
+                            result: test.result.toString()
+                        }))
                 }
             };
 
@@ -493,6 +526,13 @@ const Hematology = () => {
                             value={formData.test_details.referring_physician}
                             onChange={(e) => handleInputChange('test_details', 'referring_physician', e.target.value)}
                             required
+                        />
+                        <input
+                            type="text"
+                            placeholder="Doctor ID"
+                            value={doctorId}
+                            readOnly
+                            style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                         />
                     </div>
                 </div>
