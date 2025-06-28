@@ -33,12 +33,12 @@ export const HematologyService = {
     },
 
     getTestAttributes: async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-            
             console.log('Attempting to fetch test attributes with token:', token.substring(0, 20) + '...');
             console.log('Full token:', token);
             console.log('Request URL:', `${API_URL}/doctors/getatts`);
@@ -79,6 +79,20 @@ export const HematologyService = {
                     console.error('Alternative endpoint also failed:', altError);
                 }
                 
+                // Try with /employee prefix
+                try {
+                    const empResponse = await axios.get(`${API_URL}/employee/getatts`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    console.log("Employee endpoint response:", empResponse);
+                    return empResponse.data;
+                } catch (empError) {
+                    console.error('Employee endpoint also failed:', empError);
+                }
+                
                 // Try POST method instead of GET
                 try {
                     const postResponse = await axios.post(`${API_URL}/doctors/getatts`, {}, {
@@ -91,6 +105,32 @@ export const HematologyService = {
                     return postResponse.data;
                 } catch (postError) {
                     console.error('POST method also failed:', postError);
+                }
+                
+                // Try different endpoint names
+                const alternativeEndpoints = [
+                    '/doctors/getattributes',
+                    '/doctors/gettestattributes', 
+                    '/doctors/referenceranges',
+                    '/doctors/tests',
+                    '/employee/getattributes',
+                    '/employee/gettestattributes'
+                ];
+                
+                for (const endpoint of alternativeEndpoints) {
+                    try {
+                        console.log(`Trying endpoint: ${endpoint}`);
+                        const altResponse = await axios.get(`${API_URL}${endpoint}`, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        console.log(`Success with endpoint ${endpoint}:`, altResponse);
+                        return altResponse.data;
+                    } catch (altError) {
+                        console.error(`Endpoint ${endpoint} failed:`, altError.response?.status);
+                    }
                 }
             }
             
