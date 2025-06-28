@@ -39,22 +39,14 @@ export const HematologyService = {
                 throw new Error('No authentication token found');
             }
             
-            // Decode JWT token to get user role
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            const decodedToken = JSON.parse(jsonPayload);
-            const userRole = decodedToken.role;
-            
-            console.log('User role:', userRole);
             console.log('Attempting to fetch test attributes with token:', token.substring(0, 20) + '...');
+            console.log('Full token:', token);
+            console.log('Request URL:', `${API_URL}/doctors/getatts`);
             
-            // Choose endpoint based on user role
-            const endpoint = userRole === 'DOC' ? '/doctors/getatts' : '/employee/getatts';
+            // Test if the endpoint is accessible
+            console.log('Testing endpoint accessibility...');
             
-            const response = await axios.get(`${API_URL}${endpoint}`, {
+            const response = await axios.get(`${API_URL}/doctors/getatts`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -64,6 +56,44 @@ export const HematologyService = {
             return response.data;
         } catch (error) {
             console.error('Error fetching test attributes:', error);
+            console.error('Error response:', error.response);
+            console.error('Error status:', error.response?.status);
+            console.error('Error data:', error.response?.data);
+            console.error('Error headers:', error.response?.headers);
+            
+            // Try alternative endpoints if the main one fails
+            if (error.response?.status === 403 || error.response?.status === 404) {
+                console.log('Trying alternative endpoints...');
+                
+                // Try without /doctors prefix
+                try {
+                    const altResponse = await axios.get(`${API_URL}/getatts`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    console.log("Alternative endpoint response:", altResponse);
+                    return altResponse.data;
+                } catch (altError) {
+                    console.error('Alternative endpoint also failed:', altError);
+                }
+                
+                // Try POST method instead of GET
+                try {
+                    const postResponse = await axios.post(`${API_URL}/doctors/getatts`, {}, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    console.log("POST method response:", postResponse);
+                    return postResponse.data;
+                } catch (postError) {
+                    console.error('POST method also failed:', postError);
+                }
+            }
+            
             if (error.response?.status === 403) {
                 throw new Error('Access denied. You may not have the required permissions to access test attributes.');
             }
