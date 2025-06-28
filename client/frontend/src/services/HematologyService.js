@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { CBC_TESTS } from './cbcTestMeta';
 
 const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
 
@@ -36,24 +35,39 @@ export const HematologyService = {
     getTestAttributes: async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${API_URL}/doctors/getatts`, {
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+            
+            // Decode JWT token to get user role
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const decodedToken = JSON.parse(jsonPayload);
+            const userRole = decodedToken.role;
+            
+            console.log('User role:', userRole);
+            console.log('Attempting to fetch test attributes with token:', token.substring(0, 20) + '...');
+            
+            // Choose endpoint based on user role
+            const endpoint = userRole === 'DOC' ? '/doctors/getatts' : '/employee/getatts';
+            
+            const response = await axios.get(`${API_URL}${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            console.log("response", response);
+            console.log("Test attributes response:", response);
             return response.data;
         } catch (error) {
             console.error('Error fetching test attributes:', error);
-            console.log('Falling back to hardcoded CBC_TESTS');
-            // Convert CBC_TESTS to ReferenceRange format for compatibility
-            return CBC_TESTS.map(test => ({
-                attributeName: test.name,
-                unit: test.unit,
-                fromRange: test.min,
-                toRange: test.max
-            }));
+            if (error.response?.status === 403) {
+                throw new Error('Access denied. You may not have the required permissions to access test attributes.');
+            }
+            throw error;
         }
     },
 

@@ -188,6 +188,7 @@ const Hematology = () => {
     const [activeTab, setActiveTab] = useState('manual');
     const [testAttributes, setTestAttributes] = useState([]);
     const [loadingAttributes, setLoadingAttributes] = useState(true);
+    const [userRole, setUserRole] = useState('');
     const [formData, setFormData] = useState({
         patient_info: {
             name: '',
@@ -218,6 +219,14 @@ const Hematology = () => {
     const fetchTestAttributes = async () => {
         try {
             setLoadingAttributes(true);
+            
+            // Check if user has doctor role
+            if (userRole !== 'DOC') {
+                setError('This feature requires doctor permissions. Please log in as a doctor to access test attributes.');
+                setLoadingAttributes(false);
+                return;
+            }
+            
             const attributes = await HematologyService.getTestAttributes();
             setTestAttributes(attributes);
             console.log('Fetched test attributes:', attributes);
@@ -242,15 +251,22 @@ const Hematology = () => {
                 const decodedToken = JSON.parse(jsonPayload);
                 setDoctorId(decodedToken.sub); // 'sub' is the standard JWT claim for subject (ID)
                 console.log('Extracted doctor ID:', decodedToken.sub);
+                console.log('User role from token:', decodedToken.role);
+                console.log('Full decoded token:', decodedToken);
+                setUserRole(decodedToken.role);
             } catch (error) {
                 console.error('Error decoding JWT token:', error);
                 setError('Error extracting doctor information from token');
             }
         }
-        
-        // Fetch test attributes
-        fetchTestAttributes();
     }, []);
+
+    // Fetch test attributes when user role is available
+    useEffect(() => {
+        if (userRole) {
+            fetchTestAttributes();
+        }
+    }, [userRole]);
 
     const getTestMeta = (testName) => {
         return testAttributes.find(t => t.attributeName === testName);
@@ -553,7 +569,12 @@ const Hematology = () => {
 
                 <div className="form-section">
                     <h2>Blood Count Tests</h2>
-                    {loadingAttributes ? (
+                    {userRole && userRole !== 'DOC' ? (
+                        <div style={{ textAlign: 'center', padding: '20px', color: '#d32f2f' }}>
+                            <p>⚠️ This feature requires doctor permissions.</p>
+                            <p>Please log in as a doctor to access test attributes and use the hematology features.</p>
+                        </div>
+                    ) : loadingAttributes ? (
                         <div style={{ textAlign: 'center', padding: '20px' }}>
                             <p>Loading test attributes...</p>
                         </div>
@@ -647,20 +668,29 @@ const Hematology = () => {
                 </div>
 
                 <div style={{ display: 'flex', gap: '16px', marginTop: '20px' }}>
-                    <button type="submit" className="submit-button" disabled={loading}>
+                    <button 
+                        type="submit" 
+                        className="submit-button" 
+                        disabled={loading || userRole !== 'DOC'}
+                    >
                         {loading ? 'Generating Report...' : 'Generate Report'}
                     </button>
                     <button 
                         type="button" 
                         onClick={handleAddTest} 
                         className="submit-button" 
-                        disabled={addTestLoading}
+                        disabled={addTestLoading || userRole !== 'DOC'}
                         style={{ backgroundColor: '#28a745' }}
                     >
                         {addTestLoading ? 'Adding Test...' : 'Add Test'}
                     </button>
                 </div>
                 {addTestSuccess && <div className="success-message" style={{ marginTop: '10px', color: '#28a745' }}>{addTestSuccess}</div>}
+                {userRole && userRole !== 'DOC' && (
+                    <div style={{ marginTop: '10px', color: '#d32f2f', textAlign: 'center' }}>
+                        <p>⚠️ Form submission is disabled for non-doctor users.</p>
+                    </div>
+                )}
             </form>
         </div>
     );
