@@ -41,11 +41,12 @@ public class DoctorServiceImpl implements DoctorService {
     private final TestAttributeRepository testAttributeRepository;
     private final PDFGenServiceImpl pdfGenService;
     private final BloodTestRepository bloodTestRepository;
+    private final RefrenceRangesRepository refrenceRangesRepository;
 
     @Autowired
     public DoctorServiceImpl(DoctorRepository doctorRepository,DiagnosisRepository diagnosisRepository,PatientDiagnosisRepository patientDiagnosisRepository,
                              AdmissionRepository admissionRepository,PatientTestRepository patientTestRepository,EmployeeServiceImpl employeeService,CommonServiceImpl commonService, TestAttributeRepository testAttributeRepository,PDFGenServiceImpl pdfGenService,
-                             BloodTestRepository bloodTestRepository) {
+                             BloodTestRepository bloodTestRepository,RefrenceRangesRepository refrenceRangesRepository) {
         this.doctorRepository = doctorRepository;
         this.diagnosisRepository = diagnosisRepository;
         this.patientDiagnosisRepository = patientDiagnosisRepository;
@@ -56,6 +57,7 @@ public class DoctorServiceImpl implements DoctorService {
         this.testAttributeRepository = testAttributeRepository;
         this.pdfGenService = pdfGenService;
         this.bloodTestRepository = bloodTestRepository;
+        this.refrenceRangesRepository = refrenceRangesRepository;
     }
 
     @Override
@@ -345,6 +347,19 @@ public class DoctorServiceImpl implements DoctorService {
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Attempted to delete non-existent patient with ID: {}");
             return false;
+        }
+    }
+
+    @Override
+    public String getallRefrenceRanges() {
+        List<ReferenceRange> atts = refrenceRangesRepository.findAll();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            return objectMapper.writeValueAsString(atts);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
     }
 

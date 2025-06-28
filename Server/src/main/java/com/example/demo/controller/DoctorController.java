@@ -234,6 +234,10 @@ public class DoctorController {
         }
     }
 
+    @PreAuthorize("hasAuthority('DOC')")
+    @GetMapping("/getatts")
+    public String getatts() { return doctorService.getallRefrenceRanges(); }
+
 
 
 

@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.time.LocalDate;
 import java.util.List;
 import com.example.demo.model.Doctor;
+import com.example.demo.model.ReferenceRange;
 
 public interface DoctorService {
     Doctor createDoctor(Doctor doctor);
@@ -25,6 +26,7 @@ public interface DoctorService {
     boolean InsertTest(String Json);
     boolean UpdateTest(Integer testId);
     boolean DeleteTest(Integer testId);
+    public String getallRefrenceRanges();
 
 }
 
