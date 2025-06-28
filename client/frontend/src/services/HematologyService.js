@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app/employee';
+const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
 
 export const HematologyService = {
     generateReport: async (reportData) => {
         console.log("reportData", reportData);
         try {
-            const response = await axios.post(`${API_URL}/genReport`, reportData, {
+            const response = await axios.post(`${API_URL}/employee/genReport`, reportData, {
                 responseType: 'blob'
             });
             return response.data;
@@ -18,7 +18,7 @@ export const HematologyService = {
     insertTest: async (testData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(`${API_URL}/insertest`, JSON.stringify(testData), {
+            const response = await axios.post(`${API_URL}/doctors/insertest`, JSON.stringify(testData), {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
