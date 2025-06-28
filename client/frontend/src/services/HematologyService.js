@@ -15,6 +15,22 @@ export const HematologyService = {
         }
     },
 
+    insertTest: async (testData) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(`${API_URL}/insertest`, JSON.stringify(testData), {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error inserting test:', error);
+            throw error;
+        }
+    },
+
     parseHtmlFile: async (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();

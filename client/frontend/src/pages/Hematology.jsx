@@ -218,6 +218,8 @@ const Hematology = () => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [addTestLoading, setAddTestLoading] = useState(false);
+    const [addTestSuccess, setAddTestSuccess] = useState('');
 
     const handleTestTypeChange = (index, testName) => {
         const meta = getTestMeta(testName);
@@ -361,6 +363,48 @@ const Hematology = () => {
             setError('Error generating report: ' + error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAddTest = async () => {
+        setAddTestLoading(true);
+        setError('');
+        setAddTestSuccess('');
+
+        try {
+            // Format the data according to the backend expectations
+            const testData = {
+                test_details: {
+                    patient_Id: formData.patient_info.test_id, // Using test_id as patient_Id
+                    sample_date: formData.test_details.sample_date,
+                    print_date: formData.test_details.print_date,
+                    referring_physician_Id: formData.test_details.referring_physician, // Using referring_physician as ID
+                    asissting_physician_Id: formData.test_details.referring_physician, // Using same as referring for now
+                    comments: doctorComments
+                },
+                CBC: {
+                    tests: formData.blood_count_report.tests.map(test => ({
+                        test_name: test.test_name,
+                        result: test.result.toString()
+                    }))
+                }
+            };
+
+            console.log('Sending test data:', testData);
+
+            const result = await HematologyService.insertTest(testData);
+            
+            if (result === true) {
+                setAddTestSuccess('Test added successfully!');
+                setTimeout(() => setAddTestSuccess(''), 3000);
+            } else {
+                setError('Failed to add test. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error adding test:', error);
+            setError('Error adding test: ' + (error.response?.data || error.message));
+        } finally {
+            setAddTestLoading(false);
         }
     };
 
@@ -542,9 +586,21 @@ const Hematology = () => {
                     />
                 </div>
 
-                <button type="submit" className="submit-button" disabled={loading}>
-                    {loading ? 'Generating Report...' : 'Generate Report'}
-                </button>
+                <div style={{ display: 'flex', gap: '16px', marginTop: '20px' }}>
+                    <button type="submit" className="submit-button" disabled={loading}>
+                        {loading ? 'Generating Report...' : 'Generate Report'}
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={handleAddTest} 
+                        className="submit-button" 
+                        disabled={addTestLoading}
+                        style={{ backgroundColor: '#28a745' }}
+                    >
+                        {addTestLoading ? 'Adding Test...' : 'Add Test'}
+                    </button>
+                </div>
+                {addTestSuccess && <div className="success-message" style={{ marginTop: '10px', color: '#28a745' }}>{addTestSuccess}</div>}
             </form>
         </div>
     );
