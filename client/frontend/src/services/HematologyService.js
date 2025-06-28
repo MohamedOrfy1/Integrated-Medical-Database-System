@@ -24,6 +24,7 @@ export const HematologyService = {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log("response", response);
             return response.data;
         } catch (error) {
             console.error('Error inserting test:', error);
