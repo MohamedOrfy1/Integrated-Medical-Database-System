@@ -51,12 +51,7 @@ function parseHematologyReport(htmlString, testAttributes) {
         const tests = [];
         const metaMap = {};
         testAttributes.forEach(meta => {
-            metaMap[normalizeTestName(meta.name)] = meta;
-            if (meta.aliases && Array.isArray(meta.aliases)) {
-                meta.aliases.forEach(alias => {
-                    metaMap[normalizeTestName(alias)] = meta;
-                });
-            }
+            metaMap[normalizeTestName(meta.attributeName)] = meta;
         });
 
         // Debug: log all normalized test attribute names
@@ -84,8 +79,8 @@ function parseHematologyReport(htmlString, testAttributes) {
                                 const numValue = parseFloat(value.replace(/,/g, ''));
                                 let flag = '';
                                 if (!isNaN(numValue)) {
-                                    if (typeof metaMap[normName].min === 'number' && typeof metaMap[normName].max === 'number') {
-                                        if (numValue < metaMap[normName].min || numValue > metaMap[normName].max) {
+                                    if (typeof metaMap[normName].fromRange === 'number' && typeof metaMap[normName].toRange === 'number') {
+                                        if (numValue < metaMap[normName].fromRange || numValue > metaMap[normName].toRange) {
                                             flag = 'abnormal';
                                         } else {
                                             flag = 'normal';
@@ -93,10 +88,10 @@ function parseHematologyReport(htmlString, testAttributes) {
                                     }
                                 }
                                 tests.push({
-                                    test_name: metaMap[normName].name,
+                                    test_name: metaMap[normName].attributeName,
                                     result: value,
                                     unit: metaMap[normName].unit,
-                                    reference_range: metaMap[normName].referenceRange,
+                                    reference_range: `${metaMap[normName].fromRange}-${metaMap[normName].toRange}`,
                                     flag
                                 });
                                 break;
@@ -258,7 +253,7 @@ const Hematology = () => {
     }, []);
 
     const getTestMeta = (testName) => {
-        return testAttributes.find(t => t.name === testName);
+        return testAttributes.find(t => t.attributeName === testName);
     };
 
     const handleTestTypeChange = (index, testName) => {
@@ -269,7 +264,7 @@ const Hematology = () => {
                 ...newTests[index],
                 test_name: testName,
                 unit: meta ? meta.unit : '',
-                reference_range: meta ? meta.referenceRange : '',
+                reference_range: meta ? `${meta.fromRange}-${meta.toRange}` : '',
                 flag: '',
                 result: ''
             };
@@ -293,7 +288,7 @@ const Hematology = () => {
                 const num = parseFloat(value);
                 if (isNaN(num)) {
                     flag = '';
-                } else if (num < meta.min || num > meta.max) {
+                } else if (num < meta.fromRange || num > meta.toRange) {
                     flag = 'abnormal';
                 } else {
                     flag = 'normal';
@@ -586,7 +581,7 @@ const Hematology = () => {
                                                 >
                                                     <option value="">Select Test</option>
                                                     {testAttributes.map(t => (
-                                                        <option key={t.name} value={t.name}>{t.name}</option>
+                                                        <option key={t.attributeName} value={t.attributeName}>{t.attributeName}</option>
                                                     ))}
                                                 </select>
                                             </td>

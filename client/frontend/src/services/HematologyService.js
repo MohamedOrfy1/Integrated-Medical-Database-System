@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { CBC_TESTS } from './cbcTestMeta';
 
 const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
 
@@ -41,10 +42,18 @@ export const HematologyService = {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log("response", response);
             return response.data;
         } catch (error) {
             console.error('Error fetching test attributes:', error);
-            throw error;
+            console.log('Falling back to hardcoded CBC_TESTS');
+            // Convert CBC_TESTS to ReferenceRange format for compatibility
+            return CBC_TESTS.map(test => ({
+                attributeName: test.name,
+                unit: test.unit,
+                fromRange: test.min,
+                toRange: test.max
+            }));
         }
     },
 
