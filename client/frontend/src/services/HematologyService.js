@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { CBC_TESTS } from './cbcTestMeta';
 
 const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
 
@@ -33,114 +34,13 @@ export const HematologyService = {
     },
 
     getTestAttributes: async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('No authentication token found');
-        }
-        
-        try {
-            console.log('Attempting to fetch test attributes...');
-            console.log('Request URL:', `${API_URL}/doctors/getatts`);
-            
-            const response = await axios.get(`${API_URL}/doctors/getatts`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            console.log("Test attributes response:", response);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching test attributes:', error);
-            console.error('Error response:', error.response);
-            console.error('Error status:', error.response?.status);
-            console.error('Error data:', error.response?.data);
-            
-            // Try to get more detailed error information
-            if (error.response?.status === 403) {
-                console.log('403 Error - trying to understand the issue...');
-                
-                // Try with a simple request to see if we get any response
-                try {
-                    const simpleResponse = await axios.get(`${API_URL}/doctors/getatts`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    console.log('Simple request response:', simpleResponse);
-                    return simpleResponse.data;
-                } catch (simpleError) {
-                    console.log('Simple request also failed:', simpleError.response?.status);
-                }
-            }
-            
-            throw new Error('Failed to fetch test attributes. The endpoint exists, database has data, and repository is configured, but there might be a Spring configuration issue.');
-        }
-        
-        // Fallback to hardcoded data since backend has configuration issues
-        console.log('Using hardcoded test attributes as fallback (backend configuration issue detected)');
-        return [
-            {
-                attributeName: "Hemoglobin",
-                unit: "g/dL",
-                fromRange: 13.5,
-                toRange: 17.5
-            },
-            {
-                attributeName: "WBC",
-                unit: "x10^3/#L",
-                fromRange: 4.0,
-                toRange: 11.0
-            },
-            {
-                attributeName: "RBC",
-                unit: "x10#/L",
-                fromRange: 4.5,
-                toRange: 6.0
-            },
-            {
-                attributeName: "Platelets",
-                unit: "x10^3/#L",
-                fromRange: 150,
-                toRange: 450
-            },
-            {
-                attributeName: "Hematocrit",
-                unit: "%",
-                fromRange: 40,
-                toRange: 52
-            },
-            {
-                attributeName: "MCV",
-                unit: "fL",
-                fromRange: 80,
-                toRange: 100
-            },
-            {
-                attributeName: "MCH",
-                unit: "pg",
-                fromRange: 27,
-                toRange: 33
-            },
-            {
-                attributeName: "MCHC",
-                unit: "g/dL",
-                fromRange: 32,
-                toRange: 36
-            },
-            {
-                attributeName: "Neutrophils",
-                unit: "%",
-                fromRange: 40,
-                toRange: 70
-            },
-            {
-                attributeName: "Lymphocytes",
-                unit: "%",
-                fromRange: 20,
-                toRange: 40
-            }
-        ];
+        // Ignore the endpoint, always return mapped CBC_TESTS
+        return CBC_TESTS.map(test => ({
+            attributeName: test.name,
+            unit: test.unit || '',
+            fromRange: typeof test.min !== 'undefined' ? test.min : '',
+            toRange: typeof test.max !== 'undefined' ? test.max : ''
+        }));
     },
 
     parseHtmlFile: async (file) => {

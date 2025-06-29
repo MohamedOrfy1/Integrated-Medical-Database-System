@@ -1,6 +1,6 @@
 export const CBC_TESTS = [
   {
-    name: "Hemoglobin",
+    name: "Haemoglobin",
     aliases: ["Haemoglobin"],
     unit: "g/dL",
     referenceRange: "13.5-17.5",
@@ -8,15 +8,7 @@ export const CBC_TESTS = [
     max: 17.5,
   },
   {
-    name: "WBC",
-    aliases: ["WBCs"],
-    unit: "x10^3/#L",
-    referenceRange: "4.0-11.0",
-    min: 4.0,
-    max: 11.0,
-  },
-  {
-    name: "RBC",
+    name: "RBCs",
     aliases: ["RBCs"],
     unit: "x10#/L",
     referenceRange: "4.5-6.0",
@@ -32,7 +24,7 @@ export const CBC_TESTS = [
     max: 450,
   },
   {
-    name: "Hematocrit",
+    name: "Haematocrit",
     aliases: ["Haematocrit"],
     unit: "%",
     referenceRange: "40-52",
@@ -40,7 +32,7 @@ export const CBC_TESTS = [
     max: 52,
   },
   {
-    name: "MCV",
+    name: "M.C.V.",
     aliases: ["M.C.V."],
     unit: "fL",
     referenceRange: "80-100",
@@ -48,7 +40,7 @@ export const CBC_TESTS = [
     max: 100,
   },
   {
-    name: "MCH",
+    name: "M.C.H.",
     aliases: ["M.C.H."],
     unit: "pg",
     referenceRange: "27-33",
@@ -56,7 +48,7 @@ export const CBC_TESTS = [
     max: 33,
   },
   {
-    name: "MCHC",
+    name: "M.C.H.C.",
     aliases: ["M.C.H.C."],
     unit: "g/dL",
     referenceRange: "32-36",
