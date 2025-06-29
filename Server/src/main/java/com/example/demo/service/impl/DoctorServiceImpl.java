@@ -264,7 +264,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public boolean InsertTest(String jsonTest) {
+    public Integer InsertTest(String jsonTest) {
         JSONObject root = new JSONObject(jsonTest);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -323,7 +323,7 @@ public class DoctorServiceImpl implements DoctorService {
                 TestAttribute tstas = testAttributeRepository.save(testAttribute);
             }
 
-        return true;
+        return testId;
     }
 
     @Override

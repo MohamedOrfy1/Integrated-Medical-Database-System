@@ -215,7 +215,7 @@ public class DoctorController {
     @PostMapping("/insertest")
     public ResponseEntity<Boolean> insertest(@RequestBody String jsontest) {
         try {
-                return ResponseEntity.ok(doctorService.InsertTest(jsontest));
+                return ResponseEntity.ok(doctorService.InsertTest(jsontest)!=0?true:false);
         } catch (Exception e) {
             return ResponseEntity.ok(false);
         }
@@ -237,6 +237,24 @@ public class DoctorController {
     @PreAuthorize("hasAuthority('DOC')")
     @GetMapping("/getatts")
     public String getatts() { return doctorService.getallRefrenceRanges(); }
+
+
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/gengetest")
+    public ResponseEntity<Resource> gengetest(@RequestBody String jsontest)throws IOException {
+
+        Integer testId = doctorService.InsertTest(jsontest);
+        doctorService.genReport(testId);
+
+        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/pdf"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 
 
 
