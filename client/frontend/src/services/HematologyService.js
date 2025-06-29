@@ -7,7 +7,7 @@ export const HematologyService = {
     generateReport: async (reportData) => {
         console.log("reportData", reportData);
         try {
-            const response = await axios.post(`${API_URL}/employee/genReport`, reportData, {
+            const response = await axios.post(`${API_URL}/doctors/genReport`, reportData, {
                 responseType: 'blob'
             });
             return response.data;
