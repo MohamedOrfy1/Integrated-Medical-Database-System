@@ -39,33 +39,8 @@ export const HematologyService = {
         }
         
         try {
-            // Decode token to see what's being sent
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            const decodedToken = JSON.parse(jsonPayload);
-            
-            console.log('Attempting to fetch test attributes with token:', token.substring(0, 20) + '...');
-            console.log('Full token:', token);
-            console.log('Decoded token payload:', decodedToken);
-            console.log('User role from token:', decodedToken.role);
+            console.log('Attempting to fetch test attributes...');
             console.log('Request URL:', `${API_URL}/doctors/getatts`);
-            
-            // First, test if other DOC-authorized endpoints work
-            console.log('Testing other DOC-authorized endpoint...');
-            try {
-                const testResponse = await axios.post(`${API_URL}/doctors/getDocPatients`, null, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                console.log('Other DOC endpoint works:', testResponse.status);
-            } catch (testError) {
-                console.error('Other DOC endpoint also fails:', testError.response?.status);
-            }
             
             const response = await axios.get(`${API_URL}/doctors/getatts`, {
                 headers: {
@@ -80,47 +55,24 @@ export const HematologyService = {
             console.error('Error response:', error.response);
             console.error('Error status:', error.response?.status);
             console.error('Error data:', error.response?.data);
-            console.error('Error headers:', error.response?.headers);
             
-            // Try with different role formats
+            // Try to get more information about the error
             if (error.response?.status === 403) {
-                console.log('Trying with different role formats...');
+                console.log('403 Error - checking if it\'s a database issue...');
                 
-                // Try with lowercase role
+                // Try to call the endpoint without authorization to see if it's an auth issue or method issue
                 try {
-                    const modifiedToken = token.replace('"role":"DOC"', '"role":"doc"');
-                    console.log('Trying with lowercase role...');
-                    const response = await axios.get(`${API_URL}/doctors/getatts`, {
-                        headers: {
-                            'Authorization': `Bearer ${modifiedToken}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    console.log("Lowercase role response:", response);
-                    return response.data;
-                } catch (lowercaseError) {
-                    console.error('Lowercase role also failed:', lowercaseError.response?.status);
-                }
-                
-                // Try without Content-Type header
-                try {
-                    console.log('Trying without Content-Type header...');
-                    const response = await axios.get(`${API_URL}/doctors/getatts`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    console.log("No Content-Type response:", response);
-                    return response.data;
-                } catch (noContentTypeError) {
-                    console.error('No Content-Type also failed:', noContentTypeError.response?.status);
+                    const noAuthResponse = await axios.get(`${API_URL}/doctors/getatts`);
+                    console.log('No auth response:', noAuthResponse);
+                } catch (noAuthError) {
+                    console.log('No auth error status:', noAuthError.response?.status);
+                    if (noAuthError.response?.status === 401) {
+                        console.log('This confirms it\'s an authorization issue, not a method issue');
+                    }
                 }
             }
             
-            if (error.response?.status === 403) {
-                throw new Error('Access denied. You may not have the required permissions to access test attributes.');
-            }
-            throw error;
+            throw new Error('Failed to fetch test attributes from the server. The endpoint might not be properly configured or the database might be empty.');
         }
     },
 
