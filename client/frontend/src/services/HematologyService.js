@@ -39,12 +39,19 @@ export const HematologyService = {
         }
         
         try {
+            // Decode token to see what's being sent
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const decodedToken = JSON.parse(jsonPayload);
+            
             console.log('Attempting to fetch test attributes with token:', token.substring(0, 20) + '...');
             console.log('Full token:', token);
+            console.log('Decoded token payload:', decodedToken);
+            console.log('User role from token:', decodedToken.role);
             console.log('Request URL:', `${API_URL}/doctors/getatts`);
-            
-            // Test if the endpoint is accessible
-            console.log('Testing endpoint accessibility...');
             
             const response = await axios.get(`${API_URL}/doctors/getatts`, {
                 headers: {
@@ -61,76 +68,38 @@ export const HematologyService = {
             console.error('Error data:', error.response?.data);
             console.error('Error headers:', error.response?.headers);
             
-            // Try alternative endpoints if the main one fails
-            if (error.response?.status === 403 || error.response?.status === 404) {
-                console.log('Trying alternative endpoints...');
+            // Try with different role formats
+            if (error.response?.status === 403) {
+                console.log('Trying with different role formats...');
                 
-                // Try without /doctors prefix
+                // Try with lowercase role
                 try {
-                    const altResponse = await axios.get(`${API_URL}/getatts`, {
+                    const modifiedToken = token.replace('"role":"DOC"', '"role":"doc"');
+                    console.log('Trying with lowercase role...');
+                    const response = await axios.get(`${API_URL}/doctors/getatts`, {
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            'Authorization': `Bearer ${modifiedToken}`,
                             'Content-Type': 'application/json'
                         }
                     });
-                    console.log("Alternative endpoint response:", altResponse);
-                    return altResponse.data;
-                } catch (altError) {
-                    console.error('Alternative endpoint also failed:', altError);
+                    console.log("Lowercase role response:", response);
+                    return response.data;
+                } catch (lowercaseError) {
+                    console.error('Lowercase role also failed:', lowercaseError.response?.status);
                 }
                 
-                // Try with /employee prefix
+                // Try without Content-Type header
                 try {
-                    const empResponse = await axios.get(`${API_URL}/employee/getatts`, {
+                    console.log('Trying without Content-Type header...');
+                    const response = await axios.get(`${API_URL}/doctors/getatts`, {
                         headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
+                            'Authorization': `Bearer ${token}`
                         }
                     });
-                    console.log("Employee endpoint response:", empResponse);
-                    return empResponse.data;
-                } catch (empError) {
-                    console.error('Employee endpoint also failed:', empError);
-                }
-                
-                // Try POST method instead of GET
-                try {
-                    const postResponse = await axios.post(`${API_URL}/doctors/getatts`, {}, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    console.log("POST method response:", postResponse);
-                    return postResponse.data;
-                } catch (postError) {
-                    console.error('POST method also failed:', postError);
-                }
-                
-                // Try different endpoint names
-                const alternativeEndpoints = [
-                    '/doctors/getattributes',
-                    '/doctors/gettestattributes', 
-                    '/doctors/referenceranges',
-                    '/doctors/tests',
-                    '/employee/getattributes',
-                    '/employee/gettestattributes'
-                ];
-                
-                for (const endpoint of alternativeEndpoints) {
-                    try {
-                        console.log(`Trying endpoint: ${endpoint}`);
-                        const altResponse = await axios.get(`${API_URL}${endpoint}`, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-                        console.log(`Success with endpoint ${endpoint}:`, altResponse);
-                        return altResponse.data;
-                    } catch (altError) {
-                        console.error(`Endpoint ${endpoint} failed:`, altError.response?.status);
-                    }
+                    console.log("No Content-Type response:", response);
+                    return response.data;
+                } catch (noContentTypeError) {
+                    console.error('No Content-Type also failed:', noContentTypeError.response?.status);
                 }
             }
             
