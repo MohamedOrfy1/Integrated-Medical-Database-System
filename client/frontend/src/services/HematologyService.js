@@ -53,6 +53,20 @@ export const HematologyService = {
             console.log('User role from token:', decodedToken.role);
             console.log('Request URL:', `${API_URL}/doctors/getatts`);
             
+            // First, test if other DOC-authorized endpoints work
+            console.log('Testing other DOC-authorized endpoint...');
+            try {
+                const testResponse = await axios.post(`${API_URL}/doctors/getDocPatients`, null, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log('Other DOC endpoint works:', testResponse.status);
+            } catch (testError) {
+                console.error('Other DOC endpoint also fails:', testError.response?.status);
+            }
+            
             const response = await axios.get(`${API_URL}/doctors/getatts`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
