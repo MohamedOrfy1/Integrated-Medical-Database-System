@@ -4,7 +4,8 @@ import { DoctorService } from '../services/DoctorService';
 import '../styles/Patient.css'; 
 
 export default function PatientTests() {
-    const [tests, setTests] = useState([]);
+    const [diagnoses, setDiagnoses] = useState([]);
+    const [testIds, setTestIds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { patientId } = useContext(PatientContext);
@@ -14,13 +15,9 @@ export default function PatientTests() {
             setLoading(true);
             const patientData = await DoctorService.getPatient(patientId);
             console.log('Received patient data:', patientData);
-            
-            // Extract tests from patient data
-            if (patientData && patientData.tests) {
-                setTests(patientData.tests);
-            } else {
-                setTests([]);
-            }
+
+            setDiagnoses(patientData.Diagnosis || []);
+            setTestIds(patientData.TestIDs || []);
         } catch (error) {
             console.error('Error fetching tests:', error);
             setError(error.message);
@@ -53,42 +50,40 @@ export default function PatientTests() {
     }
 
     return (
-        <div className="tests-container">
-            <h2 className="tests-title">Patient Tests</h2>
-            <div className="tests-list">
-                {tests.length === 0 ? (
-                    <div className="no-tests">No tests found</div>
-                ) : (
-                    tests.map((test) => (
-                        <div key={test.id} className="test-card">
-                            <div className="test-header">
-                                <div>
-                                    <div className="test-name">
-                                        {test.testName || test.name}
-                                    </div>
-                                    <div className="test-type">
-                                        {test.testType || test.type}
-                                    </div>
-                                </div>
-                                <div className="test-date-container">
-                                    <div>{test.date || test.testDate}</div>
-                                    <div className="test-status">
-                                        {test.status || 'Completed'}
-                                    </div>
-                                </div>
+        <div className="tests-container max-w-xl mx-auto">
+            <h2 className="tests-title text-2xl font-bold text-center mb-8">Patient Tests</h2>
+            <div className="flex flex-col gap-10">
+                <section>
+                    <h3 className="text-lg font-semibold mb-3">Diagnoses</h3>
+                    {diagnoses.length === 0 ? (
+                        <div className="no-tests text-gray-500">No diagnoses found</div>
+                    ) : (
+                        diagnoses.map((diag, idx) => (
+                            <div
+                                key={idx}
+                                className="test-card bg-white rounded-xl shadow-md p-6 mb-4"
+                            >
+                                <div><span className="font-semibold">Date:</span> {diag.DiagnosisDate}</div>
+                                <div><span className="font-semibold">Diagnosis:</span> {diag.Diagnosis}</div>
                             </div>
-
-                            <div className="test-actions">
-                                <button className="test-view-btn">
-                                    View Results
-                                </button>
-                                <button className="test-download-btn">
-                                    Download
-                                </button>
+                        ))
+                    )}
+                </section>
+                <section>
+                    <h3 className="text-lg font-semibold mb-3">Test IDs</h3>
+                    {testIds.length === 0 ? (
+                        <div className="no-tests text-gray-500">No tests found</div>
+                    ) : (
+                        testIds.map((testId, idx) => (
+                            <div
+                                key={idx}
+                                className="test-card bg-white rounded-xl shadow-md p-6 mb-4"
+                            >
+                                <div><span className="font-semibold">Test ID:</span> {testId}</div>
                             </div>
-                        </div>
-                    ))
-                )}
+                        ))
+                    )}
+                </section>
             </div>
         </div>
     );

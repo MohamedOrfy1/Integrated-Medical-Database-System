@@ -136,10 +136,16 @@ const Receptionist = () => {
     };
 
     const handleAssignSubmit = async () => {
+        console.log('Assigning doctor to patient:', selectedPatient.patientId, selectedDoctor);
         try {
             setModalLoading(true);
             const assignResult = await DoctorService.assignDoctorToPatient(selectedPatient.patientId, selectedDoctor);
-            if (assignResult === true) {
+            console.log('Assign result:', assignResult);
+            if (
+                assignResult === true ||
+                assignResult === 'true' ||
+                (typeof assignResult === 'object' && assignResult !== null && assignResult.success === true)
+            ) {
                 setAssignedPatients(prev => [...prev, selectedPatient.patientId]);
                 setShowAssignModal(false);
                 setSelectedPatient(null);
@@ -264,7 +270,6 @@ const Receptionist = () => {
                                     <button 
                                         className="action-button visit"
                                         onClick={() => handleAddVisit(patient.patientId)}
-                                        disabled={isToday(patient.registrationDate)}
                                     >
                                         Add Visit
                                     </button>
