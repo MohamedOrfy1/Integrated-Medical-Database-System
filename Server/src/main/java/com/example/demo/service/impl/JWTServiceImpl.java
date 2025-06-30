@@ -4,21 +4,20 @@ package com.example.demo.service.impl;
 import com.example.demo.service.JWTService;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.*;
-
 import java.util.Date;
 import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class JWTServiceImpl implements JWTService {
     Dotenv dotenv = Dotenv.load();
-    private final String secret = dotenv.get("jwt.secret");
-    private final long expirationDuration = Long.parseLong(dotenv.get("jwt.expiration"));
+    private final String secret = dotenv.get("jwt_secret");
+    private final long expirationDuration = Long.parseLong(dotenv.get("jwt_expiration"));
 
     @Override
     public String generateToken(String id, String role) {
         return Jwts.builder()
                 .setSubject(id)
-                .claim("role", role)  // Single role claim
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationDuration))
                 .signWith(SignatureAlgorithm.HS512, secret)

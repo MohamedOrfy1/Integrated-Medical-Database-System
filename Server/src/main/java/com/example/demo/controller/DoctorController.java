@@ -1,10 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Diagnosis;
 import com.example.demo.service.CommonService;
 import com.example.demo.service.DoctorService;
 import com.example.demo.service.impl.JWTServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +21,14 @@ import com.example.demo.model.Doctor;
 import com.example.demo.service.PDFGenService;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = {
+        "https://imbdc.vercel.app/",
+        "http://localhost:5173"
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/doctors")
 public class DoctorController {
@@ -26,6 +37,7 @@ public class DoctorController {
     private final CommonService commonService;
     private final PDFGenService pdfGenService;
     private final JWTServiceImpl jwtService;
+    private  final String FILE_DIRECTORY = "Server/src/main/java/com/example/demo/PDFDocs/";
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -38,7 +50,6 @@ public class DoctorController {
         this.commonService = commonService;
         this.pdfGenService = pdfGenService;
         this.jwtService = jwtService;
-
     }
 
     @PreAuthorize("hasAuthority('EMP')")
@@ -47,9 +58,12 @@ public class DoctorController {
 
 
     @PostMapping("/login")
-    public String login(@RequestBody Doctor doc) {
-        String username = doc.getUsername();
-        String password = doc.getPassword();
+    public String login(@RequestBody String doc) {
+        JSONObject root = new JSONObject(doc);
+
+        String username = root.getString("username");
+        String password = root.getString("password");
+
 
         String sql = "SELECT COUNT(*) FROM Doctor WHERE username = ? AND password = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
@@ -63,6 +77,22 @@ public class DoctorController {
         }
 
 
+
+
+    }
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/getPatTestsIds")
+    public ResponseEntity<String> getPatTestsIds(@RequestBody String PatientID) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(PatientID);
+            String pt = rootNode.path("PatientID").asText();
+            return ResponseEntity.ok(doctorService.getPatTestsIds(pt));
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+
     }
 
     @GetMapping("/getDiagnosis")
@@ -70,6 +100,7 @@ public class DoctorController {
         String dig = doctorService.getAllDiagnosisJson();
         return ResponseEntity.ok(dig);
     }
+
 
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatDiagnosis")
@@ -84,14 +115,49 @@ public class DoctorController {
             return null;
         }
     }
+//-----------------------------------------------
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/getReportTest")
+    public ResponseEntity<Resource> getReportTest(@RequestBody Integer TestId)throws IOException {
+        doctorService.genReport(TestId);
 
-    /*@PreAuthorize("hasAuthority('DOC')")
+        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/pdf"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+
+    //-----------------------------------------------
+
+    @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getPatient")
-    public String getPatient() {
-        String patientData = null;
+    public ResponseEntity<String> getPatient(@RequestBody String patientid) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(patientid);
+            String pid = rootNode.path("PatientID").asText();
+            return ResponseEntity.ok(doctorService.getPatientDataJson(pid));
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
 
-        return patientData;
-    }*/
+
+
+        @PreAuthorize("hasAuthority('DOC')")
+        @PostMapping("/getDiagnosedPatients")
+        public ResponseEntity<String> getDiagnosedPatients(@RequestBody String sortBy) {
+        //System.out.println(sortBy);
+        return ResponseEntity.ok(doctorService.getDiagnosedPatients(sortBy));
+    }
+
+
+
 
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/getDocPatients")
@@ -118,17 +184,79 @@ public class DoctorController {
         }
     }
 
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/addDiagnosis")
+    public ResponseEntity<String> addDiagnosis(@RequestBody Diagnosis diagnosis) {
+        try {
+            if (doctorService.addDiagnosis(diagnosis.getDiagnosisCode(), diagnosis.getDiagnosisName())) {
+                return ResponseEntity.ok("Diagnosis added successfully");
+            } else {
+                return ResponseEntity.badRequest().body("Diagnosis code already exists or invalid data");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error adding diagnosis");
+        }
+    }
+    @PreAuthorize("hasAuthority('DOC')")
+    @DeleteMapping("/diagnoses/{diagnosisCode}")
+    public ResponseEntity<Boolean> deleteDiagnosis(@PathVariable String diagnosisCode) {
+        try {
+            boolean deleted = doctorService.deleteDiagnosis(diagnosisCode);
+            return deleted
+                    ? ResponseEntity.ok(true)
+                    : ResponseEntity.ok(false);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.ok(false);
 
-    @GetMapping("/{id}")
-    public Doctor getDoctorById(@PathVariable Long id) {
-        return doctorService.getDoctorById(id);
+        }
+    }
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/insertest")
+    public ResponseEntity<Boolean> insertest(@RequestBody String jsontest) {
+        try {
+                return ResponseEntity.ok(doctorService.InsertTest(jsontest)!=0?true:false);
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
+    }
+    @PreAuthorize("hasAuthority('DOC')")
+    @DeleteMapping("/deletest")
+    public ResponseEntity<Boolean> deletest(@RequestBody String testid) {
+        try {
+            boolean deleted = doctorService.DeleteTest(Integer.parseInt(testid));
+            return deleted
+                    ? ResponseEntity.ok(true)
+                    : ResponseEntity.ok(false);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.ok(false);
+
+        }
+    }
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @GetMapping("/getatts")
+    public String getatts() { return doctorService.getallRefrenceRanges(); }
+
+
+
+    @PreAuthorize("hasAuthority('DOC')")
+    @PostMapping("/gengetest")
+    public ResponseEntity<Resource> gengetest(@RequestBody String jsontest)throws IOException {
+
+        Integer testId = doctorService.InsertTest(jsontest);
+        doctorService.genReport(testId);
+
+        Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/pdf"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
 
 
-    @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
-        doctorService.deleteDoctor(id);
-    }
 
 }

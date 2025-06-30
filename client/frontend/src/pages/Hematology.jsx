@@ -382,26 +382,48 @@ const Hematology = () => {
         setError('');
 
         try {
+            // Format dates from YYYY-MM-DD to DD-MM-YYYY
+            const formatDateForBackend = (dateString) => {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            };
+
+            // Format the data according to the backend expectations (same as insertTest)
             const reportData = {
-                ...formData,
-                patient_info: {
-                    ...formData.patient_info,
-                    age: Number(formData.patient_info.age),
+                test_details: {
+                    patient_Id: formData.patient_info.test_id, // Using test_id as patient_Id
+                    sample_date: formatDateForBackend(formData.test_details.sample_date),
+                    print_date: formatDateForBackend(formData.test_details.print_date),
+                    referring_physician_Id: doctorId || "28610151234561", // Use extracted doctor ID or fallback
+                    asissting_physician_Id: doctorId || "28807081234563", // Use extracted doctor ID or fallback
+                    comments: doctorComments || ""
                 },
-                blood_count_report: {
-                    ...formData.blood_count_report,
-                    tests: formData.blood_count_report.tests.map(test => ({
-                        ...test,
-                        result: Number(test.result),
-                    })),
-                    report_comments: doctorComments
+                CBC: {
+                    tests: formData.blood_count_report.tests
+                        .filter(test => test.test_name && test.result) // Only include tests with names and results
+                        .map(test => ({
+                            test_name: test.test_name,
+                            result: test.result.toString()
+                        }))
                 }
             };
 
-            console.log('Sending reportData:', reportData); // Debug log
+            console.log('--- DEBUG: About to send reportData to generateReport ---');
+            console.log('reportData:', JSON.stringify(reportData, null, 2));
 
             const pdfBlob = await HematologyService.generateReport(reportData);
-            
+
+            console.log('--- DEBUG: Received response from generateReport ---');
+            console.log('pdfBlob:', pdfBlob);
+            if (pdfBlob) {
+                console.log('pdfBlob type:', pdfBlob.type);
+                console.log('pdfBlob size:', pdfBlob.size);
+            }
+
             // Create a download link for the PDF
             const url = window.URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');
@@ -410,7 +432,10 @@ const Hematology = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            console.log('--- DEBUG: PDF download triggered ---');
         } catch (error) {
+            console.error('--- DEBUG: Error in handleSubmit ---');
+            console.error(error);
             setError('Error generating report: ' + error.message);
         } finally {
             setLoading(false);

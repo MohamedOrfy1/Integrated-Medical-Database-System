@@ -4,11 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "reference_ranges")
 public class ReferenceRange {
@@ -16,13 +18,13 @@ public class ReferenceRange {
     @Column(name = "attribute_name", nullable = false, length = 20)
     private String attributeName;
 
-    @Column(name = "unit", nullable = false, length = 5)
+    @Column(name = "unit", nullable = false, length = 15)
     private String unit;
 
-    @Column(name = "from_range", nullable = false)
-    private Integer fromRange;
+    @Column(name = "from_range", columnDefinition = "numeric(5,2)")
+    private Double fromRange;
 
-    @Column(name = "to_range", nullable = false)
-    private Integer toRange;
+    @Column(name = "to_range", columnDefinition = "numeric(5,2)")
+    private Double toRange;
 
 }

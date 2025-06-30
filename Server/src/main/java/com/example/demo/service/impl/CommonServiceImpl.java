@@ -5,6 +5,9 @@ import com.example.demo.service.CommonService;
 import org.springframework.stereotype.Service;
 import java.security.MessageDigest;
 import io.jsonwebtoken.*;
+
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import org.springframework.stereotype.Service;
 import java.security.NoSuchAlgorithmException;
@@ -37,37 +40,56 @@ public class CommonServiceImpl implements CommonService {
         return newHash.equals(storedHash);
     }
 
-    @Override
-    public String generateToken(String id, String role) {
-        return Jwts.builder()
-                .setSubject(id)
-                .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1800000)) //half an hour
-                .signWith(SignatureAlgorithm.HS256, SECRET)
-                .compact();
-    }
 
-    @Override
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
-            return true;
-        } catch (JwtException e) {
-            return false;
+    private int extractAgeFromDOB(LocalDate DOB){
+        if (DOB == null) {
+            throw new IllegalArgumentException("Birth date cannot be null");
         }
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(DOB, currentDate).getYears();
+
+    }
+
+
+    private LocalDate extractDOBFromID(String id){
+        if (id == null || id.length() != 14 || !id.matches("\\d{14}")) {
+            System.out.println(id);
+            throw new IllegalArgumentException("ID must be exactly 14 numeric characters");
+
+        }
+
+        String centuryDigit = id.substring(0, 1);
+        String yy = id.substring(1, 3);
+        String mm = id.substring(3, 5);
+        String dd = id.substring(5, 7);
+
+        int century = switch (centuryDigit) {
+            case "2" -> 1900;
+            case "3" -> 2000;
+            default -> throw new IllegalArgumentException("Invalid century digit in ID");
+        };
+
+        int year = century + Integer.parseInt(yy);
+        int month = Integer.parseInt(mm);
+        int day = Integer.parseInt(dd);
+
+        try {
+            return LocalDate.of(year, month, day);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid date in ID: " + e.getMessage());
+        }
+
+    }
+
+
+    @Override
+    public int getAgeFromID(String ID){
+        return extractAgeFromDOB(extractDOBFromID(ID));
     }
 
     @Override
-    public String extractID(String token) {
-        return Jwts.parser().setSigningKey(SECRET)
-                .parseClaimsJws(token).getBody().getSubject();
-    }
-
-    @Override
-    public String extractRole(String token) {
-        return (String) Jwts.parser().setSigningKey(SECRET)
-                .parseClaimsJws(token).getBody().get("role");
+    public boolean isMale(String ID){
+        return (ID.charAt(12) - '0') % 2 != 0;
     }
 
 

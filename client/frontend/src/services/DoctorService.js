@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
+const API_URL = 'http://localhost:8080';
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -200,13 +200,9 @@ export const DoctorService = {
                 throw new Error('Access forbidden');
             }
 
-            if (!response.data) {
-                throw new Error('No data received');
-            }
-
             return response.data;
         } catch (error) {
-            console.error('Error in getPatient:', error);
+            console.error('Error fetching patient:', error);
             throw error;
         }
     },
@@ -233,6 +229,33 @@ export const DoctorService = {
             return response.data;
         } catch (error) {
             console.error('Error in getDiagnosedPatients:', error);
+            throw error;
+        }
+    },
+
+    getReportTest: async (testId) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await axios.post(
+                `${API_URL}/doctors/getReportTest`,
+                testId,
+                {
+                    responseType: 'blob',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            
+            console.log('PDF report response status:', response.status);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching PDF report:', error);
             throw error;
         }
     }

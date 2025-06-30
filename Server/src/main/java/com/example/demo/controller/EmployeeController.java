@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Doctor;
 import com.example.demo.service.EmployeeService;
 import com.example.demo.service.PDFGenService;
 import com.example.demo.service.impl.JWTServiceImpl;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.model.Employee;
 
@@ -26,12 +24,15 @@ import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
+@CrossOrigin(origins = {
+        "https://imbdc.vercel.app/",
+        "http://localhost:5173"  // Add your additional origin here
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
 
-    private  final String FILE_DIRECTORY = "src/main/java/com/example/demo/PDFDocs/" ;
+    private  final String FILE_DIRECTORY = "Server/src/main/java/com/example/demo/PDFDocs/" ;
     private String html =  "";
 
 
@@ -146,11 +147,11 @@ public class EmployeeController {
     @PreAuthorize("hasAuthority('DOC')")
     @PostMapping("/genReport")
     public ResponseEntity<Resource> downloadFile(@RequestBody String ReportJson) throws IOException { //it downloads the file
-        try {
+            try {
 
-            pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders(ReportJson));
-        }catch(Exception e){
-        }
+                pdfGenService.convertXhtmlToPdf(pdfGenService.replacePlaceholders(ReportJson));
+            }catch(Exception e){
+            }
 
         Resource resource = new UrlResource(Paths.get(FILE_DIRECTORY).resolve("output.pdf").normalize().toUri());
 

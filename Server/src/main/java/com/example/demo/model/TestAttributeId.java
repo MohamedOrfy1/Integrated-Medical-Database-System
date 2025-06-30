@@ -1,21 +1,22 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.Hibernate;
-
 import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Embeddable
 public class TestAttributeId implements Serializable {
     private static final long serialVersionUID = 127317245591651129L;
-    @Column(name = "attribute_name", nullable = false)
-    private String attributeName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attribute_name", referencedColumnName = "attribute_name", nullable = false)
+    private ReferenceRange attributeReference;
 
     @Column(name = "test_id", nullable = false)
     private Integer testId;
@@ -25,13 +26,12 @@ public class TestAttributeId implements Serializable {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         TestAttributeId entity = (TestAttributeId) o;
-        return Objects.equals(this.attributeName, entity.attributeName) &&
+        return Objects.equals(this.attributeReference, entity.attributeReference) &&
                 Objects.equals(this.testId, entity.testId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(attributeName, testId);
+        return Objects.hash(attributeReference, testId);
     }
-
 }

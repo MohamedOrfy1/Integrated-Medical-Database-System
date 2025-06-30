@@ -7,4 +7,13 @@
     <option name="renamerInitialized" value="true" />
     <option name="reverseEngineeringLastDbConnectionId" value="afad992d-2412-4386-a3ac-cee5d96b8800" />
   </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="demo" name="Default">
+        <packages>
+          <package value="com.example.demo" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>

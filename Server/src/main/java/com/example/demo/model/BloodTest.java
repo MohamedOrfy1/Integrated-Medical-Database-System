@@ -1,8 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
@@ -10,10 +9,13 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "blood_test")
 public class BloodTest {
     @Id
-    @ColumnDefault("nextval('blood_test_test_id_seq')")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "test_id", nullable = false)
     private Integer id;
 
@@ -33,5 +35,8 @@ public class BloodTest {
 
     @Column(name = "printing_date")
     private LocalDate printingDate;
+
+    @Column(name = "comments", nullable = true)
+    private String comments;
 
 }

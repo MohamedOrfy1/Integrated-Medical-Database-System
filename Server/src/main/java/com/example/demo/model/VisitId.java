@@ -5,7 +5,6 @@ import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;

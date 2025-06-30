@@ -1,17 +1,30 @@
 import axios from 'axios';
 import { CBC_TESTS } from './cbcTestMeta';
 
-const API_URL = 'https://religious-tammie-tamim21-353bd377.koyeb.app';
+const API_URL = 'http://localhost:8080';
 
 export const HematologyService = {
     generateReport: async (reportData) => {
         console.log("reportData", reportData);
         try {
-            const response = await axios.post(`${API_URL}/doctors/genReport`, reportData, {
-                responseType: 'blob'
-            });
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${API_URL}/doctors/gengetest`,
+                reportData,
+                {
+                    responseType: 'blob',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log("Alooooo")
+            console.log("response", response);
             return response.data;
         } catch (error) {
+            console.error('--- DEBUG: Error in HematologyService.generateReport ---');
+            console.error(error);
             throw error;
         }
     },

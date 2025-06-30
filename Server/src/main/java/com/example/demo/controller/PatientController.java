@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.CommonService;
-import com.example.demo.service.DoctorService;
 import com.example.demo.service.PatientService;
 import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
@@ -12,8 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.model.Patient;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
+
+@CrossOrigin(origins = {
+        "https://imbdc.vercel.app/",
+        "http://localhost:5173"  // Add your additional origin here
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/patients")
 public class PatientController {

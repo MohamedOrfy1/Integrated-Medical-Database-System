@@ -25,7 +25,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Boolean InsertJsonPatient (String JsonPatient) {
 
-        Patient p = new Patient();
+        Patient p = Patient.builder().build();
         int affected_rows = 0;
 
         try {

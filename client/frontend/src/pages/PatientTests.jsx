@@ -8,6 +8,7 @@ export default function PatientTests() {
     const [testIds, setTestIds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [downloading, setDownloading] = useState(false);
     const { patientId } = useContext(PatientContext);
 
     const fetchTests = async () => {
@@ -23,6 +24,31 @@ export default function PatientTests() {
             setError(error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const downloadPDFReport = async (testId) => {
+        try {
+            setDownloading(true);
+            console.log('Downloading PDF for test ID:', testId);
+            
+            const response = await DoctorService.getReportTest(testId);
+            
+            // Create a download link for the PDF
+            const url = window.URL.createObjectURL(response);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `test_report_${testId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            
+            console.log('PDF download completed for test ID:', testId);
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            setError('Failed to download PDF report. Please try again.');
+        } finally {
+            setDownloading(false);
         }
     };
 
@@ -79,7 +105,16 @@ export default function PatientTests() {
                                 key={idx}
                                 className="test-card bg-white rounded-xl shadow-md p-6 mb-4"
                             >
-                                <div><span className="font-semibold">Test ID:</span> {testId}</div>
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold">Test ID:</span>
+                                    <button
+                                        onClick={() => downloadPDFReport(testId)}
+                                        disabled={downloading}
+                                        className="text-blue-600 hover:text-blue-800 underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {downloading ? 'Downloading...' : testId}
+                                    </button>
+                                </div>
                             </div>
                         ))
                     )}
