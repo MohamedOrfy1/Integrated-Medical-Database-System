@@ -94,6 +94,7 @@ const Research = () => {
                 console.log('API Response - Diagnosed Patients (Raw):', result);
 
                 const transformedData = result.map((patient, index) => {
+                    console.log(patient)
                     const idInfo = parseEgyptianNationalId(patient.patientId);
                     return {
                         firstName: `Patient - ${index + 1}`,
