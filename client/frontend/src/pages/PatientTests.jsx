@@ -76,49 +76,45 @@ export default function PatientTests() {
     }
 
     return (
-        <div className="tests-container max-w-xl mx-auto">
-            <h2 className="tests-title text-2xl font-bold text-center mb-8">Patient Tests</h2>
-            <div className="flex flex-col gap-10">
-                <section>
-                    <h3 className="text-lg font-semibold mb-3">Diagnoses</h3>
-                    {diagnoses.length === 0 ? (
-                        <div className="no-tests text-gray-500">No diagnoses found</div>
-                    ) : (
-                        diagnoses.map((diag, idx) => (
-                            <div
-                                key={idx}
-                                className="test-card bg-white rounded-xl shadow-md p-6 mb-4"
-                            >
-                                <div><span className="font-semibold">Date:</span> {diag.DiagnosisDate}</div>
-                                <div><span className="font-semibold">Diagnosis:</span> {diag.Diagnosis}</div>
+        <div className="tests-container modern-card">
+            <h2 className="tests-title">Patient Tests & Diagnoses</h2>
+            <div className="diagnosis-section">
+                <h3 className="section-subtitle">Diagnoses</h3>
+                {diagnoses.length === 0 ? (
+                    <div className="no-tests">No diagnoses found</div>
+                ) : (
+                    <div className="diagnosis-list">
+                        {diagnoses.map((diag, idx) => (
+                            <div key={idx} className="diagnosis-card">
+                                <div><span className="diagnosis-label">Date:</span> {diag.DiagnosisDate}</div>
+                                <div><span className="diagnosis-label">Diagnosis:</span> {diag.Diagnosis}</div>
                             </div>
-                        ))
-                    )}
-                </section>
-                <section>
-                    <h3 className="text-lg font-semibold mb-3">Test IDs</h3>
-                    {testIds.length === 0 ? (
-                        <div className="no-tests text-gray-500">No tests found</div>
-                    ) : (
-                        testIds.map((testId, idx) => (
-                            <div
-                                key={idx}
-                                className="test-card bg-white rounded-xl shadow-md p-6 mb-4"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="font-semibold">Test ID:</span>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <div className="test-section">
+                <h3 className="section-subtitle">Test IDs</h3>
+                {testIds.length === 0 ? (
+                    <div className="no-tests">No tests found</div>
+                ) : (
+                    <div className="test-list">
+                        {testIds.map((testId, idx) => (
+                            <div key={idx} className="test-card">
+                                <div className="test-id-row">
+                                    <span className="test-id-label">Test ID:</span>
                                     <button
                                         onClick={() => downloadPDFReport(testId)}
                                         disabled={downloading}
-                                        className="text-blue-600 hover:text-blue-800 underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="test-download-btn"
                                     >
                                         {downloading ? 'Downloading...' : testId}
                                     </button>
                                 </div>
                             </div>
-                        ))
-                    )}
-                </section>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

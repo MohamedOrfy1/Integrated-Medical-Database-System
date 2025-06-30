@@ -93,20 +93,17 @@ export default function PatientInfo() {
     }
 
     return (
-        <div className="patient-info-card">
-            <div className="patient-name">
-                {patient.first_name} {patient.family_name}
-            </div>
+        <div className="patient-info-card modern-card">
+            <h2 className="patient-info-title">Patient Information</h2>
+            <div className="patient-name-main">{patient.first_name} {patient.family_name}</div>
             <div className="patient-details-grid">
                 <div className="patient-field">
-                    <p className="patient-field-label">Registration Date</p>
-                    <p className="patient-field-value">
-                        {new Date(patient.registrationDate).toLocaleDateString()}
-                    </p>
+                    <span className="patient-field-label">Registration Date</span>
+                    <span className="patient-field-value">{new Date(patient.registrationDate).toLocaleDateString()}</span>
                 </div>
                 <div className="patient-field">
-                    <p className="patient-field-label">Age</p>
-                    <p className="patient-field-value">{patient.age}</p>
+                    <span className="patient-field-label">Age</span>
+                    <span className="patient-field-value">{patient.age}</span>
                 </div>
             </div>
         </div>

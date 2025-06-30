@@ -40,19 +40,40 @@
     color: #333;
 }
 
-.action-button.diagnosis {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
+.action-buttons {
+    display: flex;
+    gap: 10px;
 }
 
-.action-button.diagnosis:hover {
-    background-color: #388E3C;
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.action-btn.diagnosis {
+    background: #2196f3;
+    color: #fff;
+}
+
+.action-btn.diagnosis:hover {
+    background: #1769aa;
+}
+
+.action-btn.details {
+    background: #fff;
+    color: #2196f3;
+    border: 1.5px solid #2196f3;
+}
+
+.action-btn.details:hover {
+    background: #e3f2fd;
+    color: #1769aa;
 }
 
 .modal-overlay {

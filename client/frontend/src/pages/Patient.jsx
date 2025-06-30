@@ -5,14 +5,13 @@ import '../styles/Patient.css';
 
 export default function Patient() {
   return (
-    <div className="patient-container">
-      <div className="patient-info-section">
+    <div className="patient-page-layout">
+      <section className="patient-info-section">
         <PatientInfo/>
-      </div>
-      
-      <div className="patient-visits-section">
+      </section>
+      <section className="patient-tests-section">
         <PatientTests/>
-      </div>
+      </section>
     </div>
   )
 }

@@ -41,6 +41,7 @@ const DoctorDashboard = () => {
             setLoading(true);
             setError('');
             const data = await DoctorService.getAssignedPatients();
+            console.log(data)
             setPatients(data);
         } catch (err) {
             console.error('Error fetching patients:', err);
@@ -214,7 +215,6 @@ const DoctorDashboard = () => {
                                 <th>Patient ID</th>
                                 <th>Name</th>
                                 <th>Registration Date</th>
-                                <th>Diagnosis</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -229,26 +229,23 @@ const DoctorDashboard = () => {
                                         <td>{[patient.firstName, patient.fatherName, patient.grandfatherName, patient.familyName].filter(Boolean).join(' ')}</td>
                                         <td>{new Date(patient.registrationDate).toLocaleDateString()}</td>
                                         <td>
-                                            {patient.latestDiagnosis
-                                                ? `${
-                                                    patient.latestDiagnosis.diagnosisName ||
-                                                    diagnosisList.find(d => d.diagnosisCode === patient.latestDiagnosis.diagnosisId)?.diagnosisName ||
-                                                    patient.latestDiagnosis.diagnosisId
-                                                } (${patient.latestDiagnosis.diagnosisDate})`
-                                                : '—'}
-                                        </td>
-                                        <td>
-                                        <button onClick={() => handleAddDiagnosis(patient)}>
-                                            Add Diagnosis
-                                        </button>
-                                        <button
-                                            style={{ marginLeft: "8px" }}
-                                            onClick={() =>{ setPatientId(patient.patientId);
-                                                console.log(patientId)
-                                                navigate(`/patient`);
-                                                }}
-                                            > View Details
-                                        </button>
+                                            <div className="action-buttons">
+                                                <button
+                                                    className="action-btn diagnosis"
+                                                    onClick={() => handleAddDiagnosis(patient)}
+                                                >
+                                                    Add Diagnosis
+                                                </button>
+                                                <button
+                                                    className="action-btn details"
+                                                    onClick={() => {
+                                                        setPatientId(patient.patientId);
+                                                        navigate(`/patient`);
+                                                    }}
+                                                >
+                                                    View Details
+                                                </button>
+                                            </div>
                                         </td>   
                                     </tr>
                                 ))}
