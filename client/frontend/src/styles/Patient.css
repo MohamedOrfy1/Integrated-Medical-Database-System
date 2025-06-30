@@ -369,6 +369,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .test-download-btn {
@@ -380,9 +381,25 @@
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
+  margin-right: 8px;
 }
 .test-download-btn:hover {
   background: #1769aa;
+}
+
+.test-delete-btn {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 0;
+}
+.test-delete-btn:hover {
+  background: #b71c1c;
 }
 
 .no-tests {

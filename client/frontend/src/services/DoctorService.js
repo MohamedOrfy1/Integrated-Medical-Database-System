@@ -258,5 +258,45 @@ export const DoctorService = {
             console.error('Error fetching PDF report:', error);
             throw error;
         }
+    },
+
+    diagnosePatient: async (diagnosisPayload) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                `${API_URL}/doctors/diagnosePatient`,
+                JSON.stringify(diagnosisPayload),
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error diagnosing patient:', error);
+            throw error;
+        }
+    },
+
+    deleteTest: async (testId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(
+                `${API_URL}/doctors/deletest`,
+                {
+                    data: testId.toString(),
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting test:', error);
+            throw error;
+        }
     }
 }; 

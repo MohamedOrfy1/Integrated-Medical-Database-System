@@ -83,9 +83,7 @@ const DoctorDashboard = () => {
                 DiagnosisDate: diagnosisData.diagnosisDate,
                 PatientId: selectedPatient.patientId
             };
-            
-            const success = await DoctorService.addDiagnosis(payload);
-            
+            const success = await DoctorService.diagnosePatient(payload);
             if (success) {
                 setSuccessMessage('Diagnosis added successfully!');
                 setShowDiagnosisModal(false);

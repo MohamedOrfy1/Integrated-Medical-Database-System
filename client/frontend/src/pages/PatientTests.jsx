@@ -9,6 +9,7 @@ export default function PatientTests() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [downloading, setDownloading] = useState(false);
+    const [deletingTestId, setDeletingTestId] = useState(null);
     const { patientId } = useContext(PatientContext);
 
     const fetchTests = async () => {
@@ -49,6 +50,22 @@ export default function PatientTests() {
             setError('Failed to download PDF report. Please try again.');
         } finally {
             setDownloading(false);
+        }
+    };
+
+    const deleteTest = async (testId) => {
+        try {
+            setDeletingTestId(testId);
+            const result = await DoctorService.deleteTest(testId);
+            if (result) {
+                setTestIds(prev => prev.filter(id => id !== testId));
+            } else {
+                setError('Failed to delete test.');
+            }
+        } catch (error) {
+            setError('Failed to delete test.');
+        } finally {
+            setDeletingTestId(null);
         }
     };
 
@@ -109,6 +126,14 @@ export default function PatientTests() {
                                         className="test-download-btn"
                                     >
                                         {downloading ? 'Downloading...' : testId}
+                                    </button>
+                                    <button
+                                        onClick={() => deleteTest(testId)}
+                                        disabled={deletingTestId === testId}
+                                        className="test-delete-btn"
+                                        style={{marginLeft: '10px'}}
+                                    >
+                                        {deletingTestId === testId ? 'Deleting...' : 'Delete'}
                                     </button>
                                 </div>
                             </div>
