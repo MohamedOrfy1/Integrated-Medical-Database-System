@@ -20,8 +20,7 @@ const Receptionist = () => {
         grandfatherName: '',
         familyName: '',
         phoneNumber: '',
-        registrationDate: new Date().toISOString().split('T')[0],
-        email: ''
+        registrationDate: new Date().toISOString().split('T')[0]
     });
     const [assignedPatients, setAssignedPatients] = useState([]);
     const [patientId, setPatientId] = useState('');
@@ -87,7 +86,6 @@ const Receptionist = () => {
                 familyName: newPatient.familyName,
                 phoneNumber: newPatient.phoneNumber,
                 registrationDate: newPatient.registrationDate,
-                email: newPatient.email,
                 name: `${newPatient.firstName} ${newPatient.familyName || ''}`.trim()
             };
             
@@ -106,7 +104,6 @@ const Receptionist = () => {
                 familyName: '',
                 phoneNumber: '',
                 registrationDate: new Date().toISOString().split('T')[0],
-                email: ''
             });
             
             console.log('Form reset, fetching updated patient list...');
@@ -173,30 +170,35 @@ const Receptionist = () => {
         });
     };
 
-    const handleFilterByDate = async (e) => {
+    const handleFilterByDate = (e) => {
         e.preventDefault();
-        console.log('Filter by Date button pressed. Date:', filterDate);
         if (!filterDate) {
             setFilteredPatients([]);
             setError('');
             return;
         }
-        try {
-            const filtered = await PatientService.checkPatientVisitByDate(filterDate);
-            // Normalize registrationDate
-            const normalized = filtered.map(p => ({
-                ...p,
-                registrationDate: Array.isArray(p.registrationDate)
-                    ? `${p.registrationDate[0]}-${String(p.registrationDate[1]).padStart(2, '0')}-${String(p.registrationDate[2]).padStart(2, '0')}`
-                    : p.registrationDate
-            }));
-            setFilteredPatients(normalized);
-            console.log(filtered)
-            setError('');
-        } catch (err) {
-            console.error('Error in handleFilterByDate:', err);
-            setError('Failed to filter patients by date. Please try again.');
-        }
+        // Convert filterDate (YYYY-MM-DD) to numbers
+        const [filterYear, filterMonth, filterDay] = filterDate.split('-').map(Number);
+        const filtered = patients.filter(p => {
+            let regDate = p.registrationDate;
+            if (Array.isArray(regDate)) {
+                // regDate: [year, month, day] (month is 1-based)
+                return (
+                    regDate[0] === filterYear &&
+                    regDate[1] === filterMonth &&
+                    regDate[2] === filterDay
+                );
+            }
+            // If registrationDate is a string
+            const dateObj = new Date(regDate);
+            return (
+                dateObj.getFullYear() === filterYear &&
+                dateObj.getMonth() + 1 === filterMonth && // JS months are 0-based
+                dateObj.getDate() === filterDay
+            );
+        });
+        setFilteredPatients(filtered);
+        setError('');
     };
     
     const handleClearFilter = () => {
@@ -379,15 +381,6 @@ const Receptionist = () => {
                                 value={newPatient.registrationDate}
                                 onChange={handleInputChange}
                                 required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="email"
-                                name="email"
-                                value={newPatient.email}
-                                onChange={handleInputChange}
-                                placeholder="Email"
                             />
                         </div>
                         <button type="submit" disabled={loading}>
