@@ -96,7 +96,7 @@ const Research = () => {
                 const transformedData = result.map((patient, index) => {
                     const idInfo = parseEgyptianNationalId(patient.patientId);
                     return {
-                        firstName: `Patient name - ${index + 1}`,
+                        firstName: `Patient - ${index + 1}`,
                         diagnosis: patient.diagnosisName,
                         age: idInfo ? idInfo.age : 'N/A',
                         gender: idInfo ? idInfo.gender : 'N/A',

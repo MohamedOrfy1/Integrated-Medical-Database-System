@@ -105,7 +105,7 @@ function parseHematologyReport(htmlString, testAttributes) {
     }
 
     // 1. Lab No. / ID
-    let labNo = getValueAfterLabelFont('Lab No.');
+    // let labNo = getValueAfterLabelFont('Lab No.');
 
     // 2. Request Date / Test Date
     let requestDate = getValueAfterLabelFont('Request Date');
@@ -138,7 +138,7 @@ function parseHematologyReport(htmlString, testAttributes) {
     if (!referredBy) referredBy = getValueAfterLabelFont('Dr');
 
     // Debug log
-    console.log({ patientName, age, sex, labNo, referredBy, requestDate });
+    console.log({ patientName, age, sex, referredBy, requestDate });
 
     // Parse CBC test values
     const parsedTests = parseTestValues(doc);
@@ -168,7 +168,6 @@ function parseHematologyReport(htmlString, testAttributes) {
             name: patientName || '',
             age: age || '',
             gender: sex || '',
-            test_id: labNo || ''
         },
         test_details: {
             sample_date: sample_date || '',
@@ -558,7 +557,7 @@ const Hematology = () => {
                         </select>
                         <input
                             type="text"
-                            placeholder="Test ID"
+                            placeholder="Patient ID"
                             value={formData.patient_info.test_id}
                             onChange={(e) => handleInputChange('patient_info', 'test_id', e.target.value)}
                             required
